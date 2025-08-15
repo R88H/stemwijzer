@@ -8,7 +8,7 @@
   <style>
     :root{
       --bg:#ffffff; --panel:#f8fafc; --muted:#6b7280; --text:#111827; --line:#e5e7eb;
-      --blue:#1d4ed8; --blue-100:#e7efff; --blue-200:#dbeafe; --blue-300:#bfdbfe;
+      --blue:#2563eb; --blue-100:#eff6ff; --blue-200:#dbeafe; --blue-300:#bfdbfe;
       --green-100:#dcfce7; --green-200:#bbf7d0; --green-300:#86efac; --green-700:#166534;
       --glow:0 8px 24px rgba(37,99,235,.16);
     }
@@ -24,12 +24,12 @@
     .subtitle{ font-size:14px; color:var(--muted); margin:0 0 8px }
 
     .actions{ display:flex; gap:10px; flex-wrap:wrap }
-    button{ background:#eef2f7; border:1px solid var(--line); color:var(--text); padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:600; transition:.2s transform,.2s background; touch-action:manipulation; -webkit-tap-highlight-color:transparent }
+    button{ background:#eef2f7; border:1px solid var(--line); color:var(--text); padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:600; transition:.2s transform,.2s background; touch-action:manipulation; -webkit-tap-highlight-color:rgba(37,99,235,.15) }
     button:hover{ transform: translateY(-1px); background:#e5edf6 }
-    /* Subtiele blauwe primaries */
-    button.primary{ background:var(--blue-100); border-color:var(--blue-300); color:var(--blue) }
+    /* Subtiele blauwe primaries (navigatie) */
+    button.primary{ background:var(--blue-200); border-color:var(--blue-300); color:var(--blue) }
     button.primary:hover{ background:var(--blue-200) }
-    /* Subtiel groen voor "Eenvoudige vragen" */
+    /* Subtiel groene startknop voor "Eenvoudige vragen" */
     button.success-soft{ background:var(--green-100); border-color:var(--green-300); color:var(--green-700) }
     button.success-soft:hover{ background:var(--green-200) }
     button.link{ background:transparent; border:0; color:var(--muted); text-decoration:underline; padding:6px 8px }
@@ -53,9 +53,14 @@
     .qwrap .question{ min-height:62px; display:flex; align-items:flex-start }
 
     .scale{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:16px }
-    .option{ display:flex; align-items:center; justify-content:center; text-align:center; border:1px solid var(--line); border-radius:12px; padding:16px; min-height:56px; cursor:pointer; user-select:none; background:#ffffff; transition:.15s transform,.15s box-shadow,.15s border,.15s background }
+    .option{ position:relative; display:flex; align-items:center; justify-content:center; text-align:center; border:1px solid var(--line); border-radius:12px; padding:16px; min-height:56px; cursor:pointer; user-select:none; background:#ffffff; transition:.15s transform,.15s box-shadow,.15s border,.15s background }
     .option:hover{ transform: translateY(-2px); box-shadow: var(--glow); border-color:#c7d2fe; background:#f8fbff }
-    .option.selected{ border-color:#2563eb; background:#eff6ff; outline:2px solid #bfdbfe }
+    .option:active{ background:var(--blue-100); border-color:var(--blue) }
+    .option.selected{ border-color:var(--blue); background:var(--blue-100); outline:2px solid var(--blue-300) }
+
+    /* Korte ‘vliegende’ smiley */
+    .fly{ position:absolute; pointer-events:none; font-size:18px; opacity:0; transform:translateY(0) scale(.9); animation:floatUp .6s ease-out forwards }
+    @keyframes floatUp{ 0%{ opacity:0; transform:translateY(6px) scale(.9) } 30%{ opacity:1 } 100%{ opacity:0; transform:translateY(-28px) scale(1.05) } }
 
     .quiz-actions{ margin-top:24px; display:flex; gap:10px; flex-wrap:wrap }
 
@@ -71,7 +76,6 @@
     .icon{ width:18px; height:18px; display:inline-block }
     .fb{ color:#1877F2 }
     .x{ color:#000 }
-    /* Instagram gradient */
     .ig svg path{ fill:url(#igGradient) }
 
     /* ===== Responsive ===== */
@@ -143,7 +147,6 @@
     <footer>
       <div class="sharebar">
         <span>Deel deze website:</span>
-        <!-- Instagram (gradient) -->
         <a id="shareIG" class="ig" href="#" target="_blank" rel="noopener" aria-label="Deel op Instagram">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
             <defs>
@@ -157,12 +160,10 @@
           </svg>
           Instagram
         </a>
-        <!-- Facebook -->
         <a id="shareFB" class="fb" href="#" target="_blank" rel="noopener" aria-label="Deel op Facebook">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.1 5.66 21.24 10.44 22v-7.03H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.97h-2.34V22C18.34 21.24 22 17.1 22 12.06Z"/></svg>
           Facebook
         </a>
-        <!-- X (Twitter) -->
         <a id="shareX" class="x" href="#" target="_blank" rel="noopener" aria-label="Deel op X">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 2H20l-6.66 7.6L21.5 22h-6.2l-4.86-6.25L4.9 22H2l7.14-8.16L2.8 2h6.26l4.38 5.76L17.05 2Zm-1.09 18h1.7L8.17 4h-1.8l9.59 16Z"/></svg>
           X
@@ -189,7 +190,7 @@
         case 'Economie': return '📈';
         case 'Zorg': return '🩺';
         case 'Onderwijs': return '🎓';
-        case 'Defensie': return tankSVG;
+        case 'Defensie': return tankSVG; // grotere tank
         case 'Natuur': return '🌳';
         case 'Bestuur': return '🏛️';
         default: return '🤓';
@@ -376,6 +377,7 @@
     let idx = 0;          // huidige vraag index
     const answers = new Map();
     let explainOpen = false; // standaard verborgen
+    let advancing = false;   // blokkeer dubbel-klik tijdens korte highlight
 
     // ===== Helpers =====
     const $ = sel => document.querySelector(sel);
@@ -402,6 +404,18 @@
       const badge = $('#statusBadge'); badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop');
     };
 
+    function spawnFlyIcon(optNode){
+      const s = data.stellingen[idx];
+      const icon = themeIcon(s.thema);
+      const node = document.createElement('span');
+      node.className = 'fly';
+      if(typeof icon === 'string' && icon.startsWith('<svg')){ node.innerHTML = icon; node.style.width='18px'; node.style.height='18px'; }
+      else { node.textContent = icon; }
+      node.style.left = '50%'; node.style.top = '8px'; node.style.transform = 'translate(-50%, 6px) scale(.9)';
+      optNode.appendChild(node);
+      node.addEventListener('animationend', () => node.remove());
+    }
+
     const renderQuestion = () => {
       const s = data.stellingen[idx];
       $('#questionText').textContent = (mode === 'simpel') ? s.simpel : s.tekst;
@@ -416,7 +430,22 @@
         o.dataset.value = String(opt.value);
         o.textContent = opt.label;
         if (answers.get(s.id) === opt.value) o.classList.add('selected');
-        o.addEventListener('click', () => { selectValue(s.id, opt.value, o); explainOpen = false; goNext(); });
+        o.addEventListener('click', () => {
+          if (advancing) return; // voorkom dubbele taps
+          advancing = true;
+          answers.set(s.id, opt.value);
+          // visuele bevestiging op mobile: markeer selectie, spawn icoon en wacht kort
+          document.querySelectorAll('.option').forEach(n => n.classList.remove('selected'));
+          o.classList.add('selected');
+          spawnFlyIcon(o);
+          updateProgress();
+          // uitleg sluiten voor volgende vraag
+          explainOpen = false;
+          $('#explainText').style.display = 'none';
+          $('#toggleExplain').textContent = 'Toon uitleg';
+          // korte delay zodat blauw zichtbaar is op touch
+          setTimeout(() => { goNext(); advancing = false; }, 220);
+        });
         o.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.click(); } });
         optWrap.appendChild(o);
       });
@@ -427,13 +456,6 @@
       $('#showResultsBtn').hidden = !last;
 
       updateModeToggleLabel();
-      updateProgress();
-    };
-
-    const selectValue = (id, value, node) => {
-      answers.set(id, value);
-      document.querySelectorAll('.option').forEach(n => n.classList.remove('selected'));
-      node.classList.add('selected');
       updateProgress();
     };
 
@@ -499,7 +521,7 @@
     $('#toggleExplain').addEventListener('click', () => { explainOpen = !explainOpen; renderQuestion(); });
 
     $('#prevBtn').addEventListener('click', () => { if (idx>0){ idx--; renderQuestion(); window.scrollTo({top:0, behavior:'instant'}); } });
-    $('#nextBtn').addEventListener('click', goNext);
+    $('#nextBtn').addEventListener('click', () => { if (!advancing) goNext(); });
     $('#showResultsBtn').addEventListener('click', () => { $('#quiz').hidden = true; $('#results').hidden = false; showResults(); });
 
     $('#retry').addEventListener('click', () => { resetAll(); $('#results').hidden = true; $('#intro').hidden = false; });
