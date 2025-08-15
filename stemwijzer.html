@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>Eenvoudige stemwijzer</title>
+  <style>
+    :root{
+      --bg:#ffffff; --panel:#f8fafc; --muted:#6b7280; --text:#111827; --line:#e5e7eb;
+      --blue:#1d4ed8; --blue-100:#e7efff; --blue-200:#dbeafe; --blue-300:#bfdbfe;
+      --green-100:#dcfce7; --green-200:#bbf7d0; --green-300:#86efac; --green-700:#166534;
+      --glow:0 8px 24px rgba(37,99,235,.16);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{ margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text); background:var(--bg); -webkit-font-smoothing:antialiased }
+    header{ position:sticky; top:0; z-index:5; background:rgba(255,255,255,.9); backdrop-filter:saturate(120%) blur(8px); border-bottom:1px solid var(--line); padding:14px calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left)) }
+    header h1{ margin:0; font-size:18px; text-transform:lowercase }
+    main{ max-width:980px; margin:32px auto; padding:0 16px }
+
+    .card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,.05); margin-bottom:16px }
+    .title{ font-size:20px; font-weight:700; margin:0 0 6px }
+    .subtitle{ font-size:14px; color:var(--muted); margin:0 0 8px }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap }
+    button{ background:#eef2f7; border:1px solid var(--line); color:var(--text); padding:12px 16px; border-radius:12px; cursor:pointer; font-weight:600; transition:.2s transform,.2s background; touch-action:manipulation; -webkit-tap-highlight-color:transparent }
+    button:hover{ transform: translateY(-1px); background:#e5edf6 }
+    /* Subtiel blauw voor primaire (navigatie) knoppen */
+    button.primary{ background:var(--blue-100); border-color:var(--blue-300); color:var(--blue) }
+    button.primary:hover{ background:var(--blue-200) }
+    /* Subtiel groene startknop voor "Eenvoudige vragen" */
+    button.success-soft{ background:var(--green-100); border-color:var(--green-300); color:var(--green-700) }
+    button.success-soft:hover{ background:var(--green-200) }
+    button.link{ background:transparent; border:0; color:var(--muted); text-decoration:underline; padding:6px 8px }
+
+    .row{ display:flex; gap:16px; align-items:center; flex-wrap:wrap }
+    .pill{ padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); font-size:12px }
+    .status{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; padding:6px 10px; border-radius:999px; box-shadow:0 4px 12px rgba(0,0,0,.05); font-weight:700 }
+    .status .emoji{ font-size:18px; display:inline-flex; align-items:center }
+    .status svg{ width:18px; height:18px }
+    .status.pop{ animation: pop .25s ease-out }
+    @keyframes pop{ 0%{ transform:scale(.96) } 60%{ transform:scale(1.05) } 100%{ transform:scale(1) } }
+
+    .progress{ height:12px; background:#eef2ff; border:1px solid var(--line); border-radius:999px; overflow:hidden; position:relative; margin-top:10px }
+    .progress .fill{ height:100%; width:0%; background:linear-gradient(90deg, #93c5fd, #22c55e); transition: width .35s ease-in-out }
+
+    .question{ font-size:20px; line-height:1.35; font-weight:650 }
+    .explain{ font-size:14px; color:var(--muted) }
+
+    /* vaste ruimte zodat de kaart niet springt */
+    .qwrap{ margin-top:10px; background:#fff; border:1px dashed var(--line); border-radius:12px; padding:14px }
+    .qwrap .question{ min-height:62px; display:flex; align-items:flex-start }
+
+    .scale{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:16px }
+    .option{ display:flex; align-items:center; justify-content:center; text-align:center; border:1px solid var(--line); border-radius:12px; padding:16px; min-height:56px; cursor:pointer; user-select:none; background:#ffffff; transition:.15s transform,.15s box-shadow,.15s border,.15s background }
+    .option:hover{ transform: translateY(-2px); box-shadow: var(--glow); border-color:#c7d2fe; background:#f8fbff }
+    .option.selected{ border-color:#2563eb; background:#eff6ff; outline:2px solid #bfdbfe }
+
+    .quiz-actions{ margin-top:24px; display:flex; gap:10px; flex-wrap:wrap }
+
+    /* Resultaten */
+    .results{ display:grid; gap:12px }
+    .bar{ height:10px; background:#f1f5f9; border:1px solid var(--line); border-radius:999px; overflow:hidden }
+    .bar > div{ height:100%; background: linear-gradient(90deg, #93c5fd, #22c55e); width:0% }
+
+    footer{ margin:28px 0 50px; text-align:center; padding:0 calc(16px + env(safe-area-inset-right)) 0 calc(16px + env(safe-area-inset-left)) }
+    .sharebar{ display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; color:var(--muted); font-size:13px }
+    .sharebar a, .sharebar button{ all:unset; cursor:pointer; color:#4b5563; padding:6px 8px; border-radius:8px; display:inline-flex; align-items:center; gap:8px }
+    .sharebar a:hover, .sharebar button:hover{ background:#f3f4f6 }
+    .icon{ width:18px; height:18px; display:inline-block }
+    .fb{ color:#1877F2 }
+    .x{ color:#000 }
+    /* Instagram gradient */
+    .ig svg path{ fill:url(#igGradient) }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 740px){
+      main{ margin:20px auto }
+      .scale{ grid-template-columns: repeat(2, 1fr); }
+      .question{ font-size:18px }
+      .actions button{ flex:1 }
+    }
+    @media (max-width: 480px){
+      .scale{ grid-template-columns: 1fr; }
+      header h1{ font-size:16px }
+      .title{ font-size:18px }
+      .option{ min-height:54px; padding:14px }
+      .qwrap{ padding:12px }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>eenvoudige stemwijzer</h1>
+  </header>
+  <main>
+    <!-- START -->
+    <section id="intro" class="card">
+      <p class="title">Kies je soort vraag</p>
+      <p class="subtitle">Kies de stijl die je fijn vindt</p>
+      <div class="actions" style="margin-top:8px">
+        <button class="primary" id="modeNormaal">Normale vragen</button>
+        <button id="modeSimpel" class="success-soft">Eenvoudige vragen</button>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="card" hidden>
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <div class="pill" id="themePill">Thema</div>
+        <div class="status" id="statusBadge"><span class="emoji" id="statusEmoji">🌍</span><span id="counter">Vraag 1 / 30</span></div>
+      </div>
+
+      <div class="progress" aria-hidden="true"><div id="progressFill" class="fill"></div></div>
+
+      <div class="qwrap">
+        <div class="question" id="questionText"></div>
+        <div class="explain" id="explainText" style="display:none"></div>
+        <button id="toggleExplain" class="link" style="margin-top:6px">Toon uitleg</button>
+      </div>
+
+      <div class="scale" id="options"></div>
+
+      <div class="quiz-actions">
+        <button id="prevBtn">Vorige</button>
+        <button id="nextBtn" class="primary">Volgende</button>
+        <button id="showResultsBtn" hidden class="primary">Toon resultaten</button>
+        <button id="toggleSimple" class="link">Eenvoudige vragen</button>
+      </div>
+    </section>
+
+    <!-- RESULTATEN -->
+    <section id="results" class="card" hidden>
+      <p class="title">Resultaat</p>
+      <p class="subtitle">Zo goed passen je antwoorden bij de partijstandpunten.</p>
+      <div id="resultsList" class="results"></div>
+      <div class="actions" style="margin-top:16px">
+        <button id="retry">Opnieuw invullen</button>
+      </div>
+    </section>
+
+    <footer>
+      <div class="sharebar">
+        <span>Deel deze website:</span>
+        <!-- Instagram (gradient) -->
+        <a id="shareIG" class="ig" href="#" target="_blank" rel="noopener" aria-label="Deel op Instagram">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <defs>
+              <linearGradient id="igGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F58529"/>
+                <stop offset="50%" stop-color="#DD2A7B"/>
+                <stop offset="100%" stop-color="#8134AF"/>
+              </linearGradient>
+            </defs>
+            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm6-2.75a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/>
+          </svg>
+          Instagram
+        </a>
+        <!-- Facebook -->
+        <a id="shareFB" class="fb" href="#" target="_blank" rel="noopener" aria-label="Deel op Facebook">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.1 5.66 21.24 10.44 22v-7.03H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.97h-2.34V22C18.34 21.24 22 17.1 22 12.06Z"/></svg>
+          Facebook
+        </a>
+        <!-- X (Twitter) -->
+        <a id="shareX" class="x" href="#" target="_blank" rel="noopener" aria-label="Deel op X">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.05 2H20l-6.66 7.6L21.5 22h-6.2l-4.86-6.25L4.9 22H2l7.14-8.16L2.8 2h6.26l4.38 5.76L17.05 2Zm-1.09 18h1.7L8.17 4h-1.8l9.59 16Z"/></svg>
+          X
+        </a>
+        <button id="copyLink" aria-label="Kopieer link">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H8a3 3 0 0 0-3 3v5h2V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v5h2V4a3 3 0 0 0-3-3ZM7 9a3 3 0 0 0-3 3v7a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-7a3 3 0 0 0-3-3H7Zm0 2h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/></svg>
+          Kopieer link
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // ===== Deel-URL =====
+    const SHARE_URL_FALLBACK = 'https://jouw-website.nl';
+    const getShareUrl = () => { try{ const {protocol,href} = window.location; if(protocol.startsWith('http')) return href; }catch(e){} return SHARE_URL_FALLBACK; };
+
+    // ===== Thema → icoon mapping =====
+    const tankSVG = '<svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle"><rect x="8" y="14" width="40" height="10" rx="2" ry="2" fill="currentColor"/><rect x="18" y="10" width="16" height="6" rx="1" ry="1" fill="currentColor"/><rect x="48" y="15" width="12" height="2" fill="currentColor"/></svg>';
+    function themeIcon(thema){
+      switch(thema){
+        case 'Klimaat': return '🌍';
+        case 'Migratie': return '🧳';
+        case 'Economie': return '📈';
+        case 'Zorg': return '🩺';
+        case 'Onderwijs': return '🎓';
+        case 'Defensie': return tankSVG; // grotere tank
+        case 'Natuur': return '🌳';
+        case 'Bestuur': return '🏛️';
+        default: return '🤓';
+      }
+    }
+
+    // ===== DATA (30 stellingen – zonder punt) =====
+    const data = { stellingen: [
+      { id:1,  thema:'Klimaat',   tekst:'CO₂-heffing voor bedrijven moet worden afgeschaft',
+        simpel:'Schaf de extra CO₂-belasting voor bedrijven af',
+        uitleg:'Afschaffen verlaagt kosten voor bedrijven, maar kan de prikkel tot verduurzaming verminderen.',
+        simpelUitleg:'Bedrijven betalen minder. Nadeel: minder push om schoner te worden.', partijen:{BBB:2} },
+      { id:2,  thema:'Klimaat',   tekst:'Zero-emissiezones in gemeenten moeten worden opgeheven',
+        simpel:'Stop met milieuzones in steden',
+        uitleg:'Opheffen maakt rijden en bezorgen makkelijker, maar kan lokale luchtkwaliteit verslechteren.',
+        simpelUitleg:'Handiger rijden, maar mogelijk slechtere lucht.', partijen:{BBB:2} },
+      { id:3,  thema:'Klimaat',   tekst:'Extra regels voor dierwaardige veehouderij zijn niet nodig',
+        simpel:'Geen extra dierenwelzijnsregels voor boeren',
+        uitleg:'Minder regels verlaagt kosten voor boeren, maar kan dierenwelzijn minder verbeteren.',
+        simpelUitleg:'Goedkoper voor boeren, minder extra regels voor dieren.', partijen:{BBB:2} },
+      { id:4,  thema:'Klimaat',   tekst:'Beperk klimaatbeleid ten gunste van economische groei en leefbaarheid op het platteland',
+        simpel:'Minder klimaatregels, meer aandacht voor platteland',
+        uitleg:'Prioriteit naar economie en regio kan investeringen in CO₂-reductie vertragen.',
+        simpelUitleg:'Meer focus op regio en economie, minder op klimaat.', partijen:{BBB:2} },
+
+      { id:5,  thema:'Migratie',  tekst:'Asielbeleid moet strenger worden met strengere toelating en grenscontroles',
+        simpel:'Strenger asiel met strengere regels en grenzen',
+        uitleg:'Strenger beleid kan instroom verlagen, maar kan procedures verlengen en leidt soms tot kritiek.',
+        simpelUitleg:'Minder mensen laten binnen, procedures kunnen zwaarder worden.', partijen:{BBB:2} },
+      { id:6,  thema:'Migratie',  tekst:'Illegale migratie moet strafbaar worden',
+        simpel:'Illegaal binnenkomen moet strafbaar zijn',
+        uitleg:'Strafbaarstelling vergroot afschrikking, maar brengt juridische en praktische vragen mee.',
+        simpelUitleg:'Hardere aanpak, uitvoering kan lastig zijn.', partijen:{BBB:2} },
+      { id:7,  thema:'Migratie',  tekst:'Statushouders verliezen hun vergunning als ze naar het land van herkomst reizen',
+        simpel:'Ga je terug naar je land dan je vergunning kwijt',
+        uitleg:'Beperkt reizen om misbruik te voorkomen, maar botst soms met familie- of noodreizen.',
+        simpelUitleg:'Minder misbruik, maar lastig bij familie of nood.', partijen:{BBB:2} },
+      { id:8,  thema:'Migratie',  tekst:'Migranten moeten verplicht Nederlands leren en meedoen',
+        simpel:'Nieuwe mensen moeten Nederlands leren en meedoen',
+        uitleg:'Verplicht taalleren helpt integratie, maar verplichting wordt niet altijd prettig gevonden.',
+        simpelUitleg:'Nederlands leren helpt, maar verplicht is niet voor iedereen fijn.', partijen:{BBB:2} },
+
+      { id:9,  thema:'Economie',  tekst:'Economische belangen van regio’s krijgen voorrang boven strikte klimaatregels',
+        simpel:'Economie en regio eerst, niet te strenge klimaatregels',
+        uitleg:'Meer ruimte voor ondernemerschap, maar klimaatdoelen kunnen lastiger worden.',
+        simpelUitleg:'Meer kansen voor bedrijven, klimaatdoelen lastiger.', partijen:{BBB:2} },
+      { id:10, thema:'Economie',  tekst:'Ondersteuning voor lokale ondernemers en boeren moet sterker met minder papierwerk',
+        simpel:'Help lokale ondernemers en boeren met minder papierwerk',
+        uitleg:'Minder regels kan groei stimuleren, maar toezicht wordt lastiger.',
+        simpelUitleg:'Minder papier, sneller werken, controle lastiger.', partijen:{BBB:2} },
+      { id:11, thema:'Economie',  tekst:'Behoud streekziekenhuizen pinautomaten en dorpsscholen moet centraal staan',
+        simpel:'Houd dorpsziekenhuizen pinautomaten en scholen open',
+        uitleg:'Behoud voorzieningen kost geld maar houdt dorpen leefbaar.',
+        simpelUitleg:'Fijn wonen in dorpen, maar kost geld.', partijen:{BBB:2} },
+      { id:12, thema:'Economie',  tekst:'Kernenergie en kolencentrales moeten open blijven voor energiezekerheid',
+        simpel:'Kerncentrales en kolen open houden voor betrouwbare energie',
+        uitleg:'Meer zekerheid en mogelijk lagere prijzen, maar klimaateffecten en kosten blijven discussie.',
+        simpelUitleg:'Betrouwbare stroom, niet altijd goed voor klimaat.', partijen:{BBB:2} },
+
+      { id:13, thema:'Zorg',      tekst:'Minder managers in de zorg helpt efficiëntere en betaalbare zorg',
+        simpel:'Minder managers in de zorg',
+        uitleg:'Minder overhead kan zorgpersoneel ontlasten, maar risico op minder aansturing.',
+        simpelUitleg:'Meer handen aan het bed, minder kantoor.', partijen:{BBB:2} },
+      { id:14, thema:'Zorg',      tekst:'Medicijnproductie moet weer in Nederland plaatsvinden',
+        simpel:'Maak medicijnen weer in Nederland',
+        uitleg:'Minder afhankelijk van buitenland, maar investeringen en prijzen kunnen stijgen.',
+        simpelUitleg:'Minder afhankelijk, kan duurder zijn.', partijen:{BBB:2} },
+      { id:15, thema:'Zorg',      tekst:'Basispakket moet meer vergoeden voor mondzorg en fysiotherapie',
+        simpel:'Meer vergoeding voor tandarts en fysio',
+        uitleg:'Meer dekking helpt patiënten, maar premies of lasten kunnen stijgen.',
+        simpelUitleg:'Meer vergoed, premie kan omhoog.', partijen:{BBB:1} },
+      { id:16, thema:'Zorg',      tekst:'Mantelzorg en vrijwilligers moeten een grotere rol krijgen',
+        simpel:'Meer hulp van mantelzorgers en vrijwilligers',
+        uitleg:'Verlicht druk op zorg, let op overbelasting van mantelzorgers.',
+        simpelUitleg:'Helpt de zorg, kan zwaar zijn voor familie.', partijen:{BBB:2} },
+
+      { id:17, thema:'Onderwijs', tekst:'Migranten moeten werken belasting betalen en Nederlands leren voor vestiging',
+        simpel:'Voorwaarden voor migranten werken belasting Nederlands',
+        uitleg:'Vergroot deelname en draagkracht, maar kan drempels verhogen.',
+        simpelUitleg:'Meedoen is goed, geeft extra drempels.', partijen:{BBB:2} },
+      { id:18, thema:'Onderwijs', tekst:'Onderwijsbeleid moet gelijk zijn voor stad en platteland',
+        simpel:'Zelfde kansen voor scholen in stad en dorp',
+        uitleg:'Meer middelen voor regio’s kan verschillen verkleinen.',
+        simpelUitleg:'Ieder kind evenveel kans.', partijen:{BBB:2} },
+      { id:19, thema:'Onderwijs', tekst:'Onderwijs in regio’s moet worden versterkt om uitstroom naar steden te beperken',
+        simpel:'Maak onderwijs op het platteland sterker',
+        uitleg:'Betere scholen houden jongeren in de regio, kost extra geld.',
+        simpelUitleg:'Jongeren blijven eerder, kost wat.', partijen:{BBB:2} },
+      { id:20, thema:'Onderwijs', tekst:'Overheidscommunicatie gebruikt duidelijke Nederlandse taal',
+        simpel:'Overheid spreekt duidelijk Nederlands',
+        uitleg:'Eenduidige taal is duidelijk, maar toegankelijkheid voor nieuwkomers kan afnemen.',
+        simpelUitleg:'Makkelijk Nederlands, minder hulp voor nieuwkomers.', partijen:{BBB:2} },
+
+      { id:21, thema:'Defensie',  tekst:'Nederland volgt geen verplichting om 3,5% van het BBP aan defensie te besteden',
+        simpel:'Geen 3,5% BBP verplicht voor defensie',
+        uitleg:'Meer beleidsvrijheid, bondgenoten kunnen druk uitoefenen.',
+        simpelUitleg:'Meer keuze zelf, bondgenoten vinden dat niet leuk.', partijen:{BBB:1} },
+      { id:22, thema:'Defensie',  tekst:'Er moet stevig in defensie worden geïnvesteerd met minimaal 50% materieel uit Nederland',
+        simpel:'Wel investeren in defensie helft uit NL',
+        uitleg:'Versterkt krijgsmacht en industrie, mogelijk hogere kosten.',
+        simpelUitleg:'Sterkere defensie, kan duurder uitpakken.', partijen:{BBB:2} },
+      { id:23, thema:'Defensie',  tekst:'Nederland steunt Oekraïne binnen NAVO zonder AOW of zorg in gevaar te brengen',
+        simpel:'Steun Oekraïne maar niet ten koste van AOW of zorg',
+        uitleg:'Steun blijft met begrenzing om binnenlandse uitgaven te beschermen.',
+        simpelUitleg:'Helpen, maar eerst AOW en zorg.', partijen:{BBB:1} },
+      { id:24, thema:'Defensie',  tekst:'De NAVO-norm is te belastend geld gaat liever naar sociale zekerheid en zorg',
+        simpel:'Liever geld naar zorg dan NAVO-norm',
+        uitleg:'Herprioritering richting sociaal domein, gevolgen voor inzet in bondgenootschap.',
+        simpelUitleg:'Meer geld naar zorg, minder naar leger.', partijen:{BBB:1} },
+
+      { id:25, thema:'Bestuur',   tekst:'De benoeming bij de Raad van State moet eerlijker en neutraler',
+        simpel:'Raad van State aanstellen eerlijker en neutraler',
+        uitleg:'Meer transparantie kan vertrouwen vergroten; uitwerking is bepalend.',
+        simpelUitleg:'Duidelijker en eerlijker, hoe precies moet nog blijken.', partijen:{BBB:2} },
+      { id:26, thema:'Bestuur',   tekst:'De NVWA moet onafhankelijker worden',
+        simpel:'NVWA moet onafhankelijker werken',
+        uitleg:'Scheiding beleid en toezicht kan vertrouwen vergroten, kost reorganisatie.',
+        simpelUitleg:'Meer vertrouwen, organisatie moet om.', partijen:{BBB:2} },
+      { id:27, thema:'Klimaat',   tekst:'Windparken op zee worden voorlopig niet uitgebreid',
+        simpel:'Nu geen extra windparken op zee',
+        uitleg:'Rust inbouwen voor natuur en visserij, remt groei van duurzame stroom.',
+        simpelUitleg:'Beschermt natuur, minder groene stroom.', partijen:{BBB:2} },
+      { id:28, thema:'Natuur',    tekst:'Wolven mogen gevolgd en zo nodig afgeschoten worden bij bedreiging van veiligheid of leefbaarheid',
+        simpel:'Wolven volgen en zo nodig afschieten',
+        uitleg:'Balans tussen natuur en veiligheid; juridische voorwaarden zijn streng.',
+        simpelUitleg:'Veiligheid eerst, regels zijn streng.', partijen:{BBB:2} },
+      { id:29, thema:'Economie',  tekst:'Lelystad Airport kan open als het ook een militaire functie behoudt',
+        simpel:'Lelystad Airport open ook militair inzetbaar',
+        uitleg:'Extra capaciteit en strategisch nut, milieu en hinder blijven discussie.',
+        simpelUitleg:'Meer vliegen en militair nut, mogelijk meer overlast.', partijen:{BBB:1} },
+      { id:30, thema:'Onderwijs', tekst:'Minder symboolpolitiek op scholen doe maar gewoon',
+        simpel:'Minder symboolpolitiek op scholen',
+        uitleg:'Focus op basisvaardigheden; discussie over inclusie en schoolklimaat blijft.',
+        simpelUitleg:'Meer basisvakken, discussie over inclusie blijft.', partijen:{BBB:2} },
+    ]};
+
+    const ANSWER_SCALE = [
+      { label:'Helemaal mee oneens', value:-2 },
+      { label:'Mee oneens', value:-1 },
+      { label:'Neutraal / geen mening', value:0 },
+      { label:'Mee eens', value:1 },
+      { label:'Helemaal mee eens', value:2 },
+    ];
+
+    // ===== State =====
+    let mode = 'normaal'; // 'normaal' | 'simpel'
+    let idx = 0;          // huidige vraag index
+    const answers = new Map();
+    let explainOpen = false; // standaard verborgen
+
+    // ===== Helpers =====
+    const $ = sel => document.querySelector(sel);
+    const el = (t,props={}) => Object.assign(document.createElement(t), props);
+
+    const uniqueParties = () => { const set = new Set(); data.stellingen.forEach(s => Object.keys(s.partijen).forEach(p => set.add(p))); return Array.from(set); };
+
+    const updateProgress = () => {
+      const answered = Array.from(answers.values()).filter(v => typeof v === 'number').length;
+      const total = data.stellingen.length;
+      const pct = Math.round((answered / total) * 100);
+      $('#progressFill').style.width = pct + '%';
+    };
+
+    const setStatus = () => {
+      const s = data.stellingen[idx];
+      $('#themePill').textContent = s.thema || 'Thema';
+      const icon = themeIcon(s.thema);
+      const emojiSpan = $('#statusEmoji');
+      if(typeof icon === 'string' && icon.startsWith('<svg')){ emojiSpan.innerHTML = icon; }
+      else if(typeof icon === 'string'){ emojiSpan.textContent = icon; }
+      else { emojiSpan.textContent = '✨'; }
+      $('#counter').textContent = `Vraag ${idx+1} / ${data.stellingen.length}`;
+      const badge = $('#statusBadge'); badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop');
+    };
+
+    const renderQuestion = () => {
+      const s = data.stellingen[idx];
+      $('#questionText').textContent = (mode === 'simpel') ? s.simpel : s.tekst;
+      $('#explainText').textContent  = (mode === 'simpel') ? s.simpelUitleg : s.uitleg;
+      $('#toggleExplain').textContent = explainOpen ? 'Verberg uitleg' : 'Toon uitleg';
+      $('#explainText').style.display = explainOpen ? 'block' : 'none';
+      setStatus();
+
+      const optWrap = $('#options'); optWrap.innerHTML = '';
+      ANSWER_SCALE.forEach(opt => {
+        const o = el('div', { className:'option', tabIndex:0 });
+        o.dataset.value = String(opt.value);
+        o.textContent = opt.label;
+        if (answers.get(s.id) === opt.value) o.classList.add('selected');
+        o.addEventListener('click', () => { selectValue(s.id, opt.value, o); explainOpen = false; goNext(); });
+        o.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); o.click(); } });
+        optWrap.appendChild(o);
+      });
+
+      $('#prevBtn').disabled = idx === 0;
+      const last = idx === data.stellingen.length - 1;
+      $('#nextBtn').hidden = last;
+      $('#showResultsBtn').hidden = !last;
+
+      updateModeToggleLabel();
+      updateProgress();
+    };
+
+    const selectValue = (id, value, node) => {
+      answers.set(id, value);
+      document.querySelectorAll('.option').forEach(n => n.classList.remove('selected'));
+      node.classList.add('selected');
+      updateProgress();
+    };
+
+    const computeMatches = () => {
+      const parties = uniqueParties();
+      return parties.map(party => {
+        let sum = 0, n = 0;
+        data.stellingen.forEach(s => {
+          const user = answers.get(s.id);
+          if (typeof user !== 'number') return;
+          const ps = s.partijen[party];
+          if (typeof ps !== 'number') return;
+          const diff = Math.abs(user - ps);
+          sum += 1 - (diff / 4); n += 1;
+        });
+        const pct = n ? Math.round((sum / n) * 100) : 0;
+        return { party, pct, n };
+      }).sort((a,b)=>b.pct-a.pct);
+    };
+
+    const showResults = () => {
+      const list = $('#resultsList'); list.innerHTML = '';
+      const res = computeMatches();
+      if (!res.length) { list.appendChild(el('p',{textContent:'Geen resultaten (geen antwoorden of geen partij-standpunten).'})); return; }
+      res.forEach(r => {
+        const row = el('div');
+        row.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <strong>${r.party}</strong>
+              <span class="pill">${r.n} stellingen vergeleken</span>
+            </div>
+            <strong>${r.pct}%</strong>
+          </div>
+          <div class="bar"><div style="width:${r.pct}%"></div></div>`;
+        list.appendChild(row);
+      });
+    };
+
+    const goNext = () => {
+      if (idx < data.stellingen.length - 1) { idx++; renderQuestion(); window.scrollTo({top:0, behavior:'instant'}); }
+      else { $('#quiz').hidden = true; $('#results').hidden = false; showResults(); }
+    };
+
+    const resetAll = () => { answers.clear(); idx = 0; explainOpen = false; };
+
+    const updateModeToggleLabel = () => {
+      const btn = $('#toggleSimple');
+      btn.textContent = (mode === 'normaal') ? 'Eenvoudige vragen' : 'Normale vragen';
+    };
+
+    // ===== Start altijd bij vraag 1 =====
+    function startQuiz(chosenMode){
+      mode = chosenMode; // 'normaal' of 'simpel'
+      // Hard reset om altijd bij vraag 1 te starten – geen URL-parameters of vorige staat
+      resetAll();
+      $('#intro').hidden = true; $('#results').hidden = true; $('#quiz').hidden = false;
+      renderQuestion();
+    }
+
+    // ===== Events =====
+    $('#modeNormaal').addEventListener('click', () => startQuiz('normaal'));
+    $('#modeSimpel').addEventListener('click', () => startQuiz('simpel'));
+
+    $('#toggleSimple').addEventListener('click', () => { mode = (mode === 'normaal') ? 'simpel' : 'normaal'; renderQuestion(); });
+    $('#toggleExplain').addEventListener('click', () => { explainOpen = !explainOpen; renderQuestion(); });
+
+    $('#prevBtn').addEventListener('click', () => { if (idx>0){ idx--; renderQuestion(); window.scrollTo({top:0, behavior:'instant'}); } });
+    $('#nextBtn').addEventListener('click', goNext);
+    $('#showResultsBtn').addEventListener('click', () => { $('#quiz').hidden = true; $('#results').hidden = false; showResults(); });
+
+    $('#retry').addEventListener('click', () => { resetAll(); $('#results').hidden = true; $('#intro').hidden = false; });
+
+    // ===== Social links =====
+    const url = getShareUrl();
+    const shareText = 'Check deze stemwijzer:';
+    document.getElementById('shareIG').href = 'https://www.instagram.com/?url=' + encodeURIComponent(url);
+    document.getElementById('shareFB').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+    document.getElementById('shareX').href  = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(url);
+    document.getElementById('copyLink').addEventListener('click', async () => {
+      try{ await navigator.clipboard.writeText(url); alert('Dank je wel 🙂. De link is gekopieerd.'); }catch(e){ prompt('Kopieer de link:', url); }
+    });
+  </script>
+</body>
+</html>
