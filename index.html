@@ -101,6 +101,82 @@
       .option{ min-height:54px; padding:14px }
       .qwrap{ padding:12px }
     }
+  
+    /* === Hero achtergrond alleen op Pagina 1 (Intro) === */
+/* (oude block overschreven door v2 hieronder) */
+
+    body.hero-intro{
+      background-image: url('the-hague-993433.jpg'); /* zet dit pad desnoods naar /img/hero.jpg */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+    /* Subtiele witte waas voor betere leesbaarheid van tekst boven de foto */
+    body.hero-intro::after{
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.65);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Zorg dat content altijd boven de overlay staat */
+    header, main, footer, .modal{ position: relative; z-index: 1; }
+
+  
+    /* === Hero achtergrond alleen op Pagina 1 (Intro) — v2 (gradient + glass) === */
+    body.hero-intro{
+      background-image: url('the-hague-993433.jpg');
+      background-size: cover;
+      background-position: center 20%;
+      background-attachment: fixed;
+    }
+    /* Gradient overlay die van bijna transparant naar wit loopt (betere overgang met witte UI) */
+    body.hero-intro::after{
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to bottom,
+                  rgba(255,255,255,.15) 0%,
+                  rgba(255,255,255,.35) 35%,
+                  rgba(255,255,255,.65) 65%,
+                  rgba(255,255,255,1) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Header en Intro-kaart krijgen 'glass' look zodat foto subtiel doorschemert */
+    body.hero-intro header{
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(6px) saturate(1.05);
+      -webkit-backdrop-filter: blur(6px) saturate(1.05);
+      border-color: rgba(255,255,255,.6);
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    body.hero-intro #intro.card{
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(8px) saturate(1.05);
+      -webkit-backdrop-filter: blur(8px) saturate(1.05);
+      border-color: rgba(255,255,255,.65);
+      box-shadow: 0 16px 40px rgba(0,0,0,.14);
+    }
+    /* Klein detail: zachte rand binnenin het intro-paneel voor extra diepte */
+    body.hero-intro #intro.card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: inherit;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 40px rgba(255,255,255,.2);
+      pointer-events:none;
+    }
+
+  
+    /* Scroll lock when modal open */
+    html.modal-open, body.modal-open{ overflow:hidden; }
+
+    /* Animate the modal sheet for a snappier 'pop' */
+    .modal .sheet{ transform: translateY(8px); opacity:.0; transition: transform .18s ease, opacity .18s ease }
+    .modal[aria-hidden="false"] .sheet{ transform: translateY(0); opacity:1 }
+
   </style>
 </head>
 <body>
@@ -203,10 +279,10 @@
   <!-- Over modal -->
   <div id="aboutModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="aboutTitle">
     <div class="backdrop" id="aboutBackdrop"></div>
-    <div class="sheet">
+    <div class="sheet" tabindex="-1" role="document" aria-describedby="aboutBody">
       <button id="aboutClose" class="btn close" aria-label="Sluiten">✕</button>
       <h2 id="aboutTitle">Over deze stemwijzer</h2>
-      <p>Doel: je snel een <strong>indicatie</strong> geven welke partijstandpunten het meest overeenkomen met jouw antwoorden. Alles draait in je browser; er wordt niets opgeslagen.</p>
+      <p id="aboutBody">Doel: je snel een <strong>indicatie</strong> geven welke partijstandpunten het meest overeenkomen met jouw antwoorden. Alles draait in je browser; er wordt niets opgeslagen.</p>
       <h3>Veelgestelde vragen</h3>
       <ul>
         <li><strong>Hoe werkt het matchen?</strong> Per stelling vergelijken we jouw keuze (-2 t/m +2) met partijposities. Hoe dichterbij, hoe hoger het percentage.</li>
@@ -235,6 +311,8 @@
 
   <script>
     // ===== Config =====
+    // Toon hero-achtergrond op de intro-pagina
+    document.body.classList.add('hero-intro');
     const ADVANCE_DELAY = 350; // ms auto-door naar volgende vraag na keuze
 
     // Deel-URL
@@ -441,6 +519,7 @@
       mode = chosenMode; // 'standaard' of 'simpel'
       resetAll();
       $('#intro').hidden = true; $('#results').hidden = true; $('#quiz').hidden = false;
+      document.body.classList.remove('hero-intro');
       renderQuestion();
     }
 
@@ -456,13 +535,13 @@
     $('#skipBtn').addEventListener('click', skip);
     $('#showResultsBtn').addEventListener('click', () => { $('#quiz').hidden = true; $('#results').hidden = false; showResults(); });
 
-    $('#retry').addEventListener('click', () => { resetAll(); $('#results').hidden = true; $('#intro').hidden = false; });
+    $('#retry').addEventListener('click', () => { resetAll(); $('#results').hidden = true; $('#intro').hidden = false; document.body.classList.add('hero-intro'); });
 
     // Over modal logic
     const aboutModal = document.getElementById('aboutModal');
-    const openAbout = () => { aboutModal.setAttribute('aria-hidden','false'); };
-    const closeAbout = () => { aboutModal.setAttribute('aria-hidden','true'); };
-    document.getElementById('aboutOpen').addEventListener('click', openAbout);
+    const openAbout = () => { aboutModal.setAttribute('aria-hidden','false'); document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open'); setTimeout(()=> aboutModal.querySelector('.sheet').focus(), 0); };
+    const closeAbout = () => { aboutModal.setAttribute('aria-hidden','true'); document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open'); };
+    document.getElementById('aboutOpen').addEventListener('click', ()=>{ window.scrollTo({top:0, behavior:'instant'}); openAbout(); });
     document.getElementById('aboutClose').addEventListener('click', closeAbout);
     document.getElementById('aboutBackdrop').addEventListener('click', closeAbout);
     document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeAbout(); });
