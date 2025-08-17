@@ -101,7 +101,81 @@
       .option{ min-height:54px; padding:14px }
       .qwrap{ padding:12px }
     }
-  </style>
+  
+/* ===== Hero intro (full-screen achtergrond) ===== */
+:root{
+  /* Zet hier je pad naar de foto. Als de afbeelding naast index.html staat, laat zo: */
+  --hero-img-url: url('the-hague-993433.jpg');
+  /* Gebruik evt. een absolute RAW-link als je hem uit GitHub haalt. */
+}
+
+/* Transparante header met blur voor betere integratie */
+header{
+  background: rgba(255,255,255,.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(215,219,227,.6);
+}
+
+/* Introsectie als hero */
+#intro.hero{
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  min-height: calc(100dvh - 56px); /* schermhoogte minus header */
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  overflow: clip;
+}
+
+/* Achtergrondafbeelding */
+#intro.hero::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image: var(--hero-img-url);
+  background-size: cover;
+  background-position: center;
+  transform: translateZ(0);
+}
+
+/* Donkere overlay voor leesbaarheid van tekst */
+#intro.hero::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.52));
+  mix-blend-mode: multiply;
+}
+
+/* Glazen paneel voor de content */
+.hero-panel{
+  position: relative; z-index: 1;
+  width: min(920px, 92vw);
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 14px;
+  padding: 22px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+}
+
+.hero-panel .title{ margin:0 0 6px }
+.hero-panel .subtitle{ margin:0 0 12px }
+.hero-panel .actions{ margin-top:14px }
+
+/* Knoppen in de hero */
+#intro.hero .btn{ background:#fff; border-color: rgba(255,255,255,.9); }
+#intro.hero .btn:hover{ background:#f5f7fb }
+#intro.hero .btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff }
+
+/* Mobile tweaks */
+@media (max-width:740px){
+  #intro.hero{ min-height: calc(100dvh - 50px); }
+  .hero-panel{ padding:16px }
+}
+</style>
 </head>
 <body>
   <header>
@@ -115,14 +189,16 @@
 
   <main>
     <!-- Intro -->
-    <section id="intro" class="card">
-      <p class="title">Kies je soort vraag</p>
-      <p class="subtitle">Kies de stijl die je fijn vindt</p>
-      <div class="actions" style="margin-top:8px">
-        <button class="btn" id="modeStandaard">Standaard vragen</button>
-        <button class="btn" id="modeSimpel">Eenvoudige vragen</button>
-      </div>
-    </section>
+    <section id="intro" class="card hero">
+  <div class="hero-panel">
+    <p class="title">Kies je soort vraag</p>
+    <p class="subtitle">Kies de stijl die je fijn vindt</p>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="modeStandaard">Standaard vragen</button>
+      <button class="btn btn-primary" id="modeSimpel">Eenvoudige vragen</button>
+    </div>
+  </div>
+</section>
 
     <!-- Quiz -->
     <section id="quiz" class="card" hidden>
