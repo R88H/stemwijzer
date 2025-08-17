@@ -177,6 +177,18 @@
     .modal .sheet{ transform: translateY(8px); opacity:.0; transition: transform .18s ease, opacity .18s ease }
     .modal[aria-hidden="false"] .sheet{ transform: translateY(0); opacity:1 }
 
+  
+    /* === Mobile/iOS fix: show hero image on phones === */
+    @media (max-width: 820px), (hover: none) and (pointer: coarse){
+      body.hero-intro{
+        background-attachment: scroll;   /* iOS/Safari doesn't support fixed */
+        background-position: center top; /* a bit higher crop on phones */
+        background-size: cover;
+      }
+    }
+    /* Fallback via helper class for iOS detection */
+    body.hero-intro.no-fixed-bg{ background-attachment: scroll; }
+
   </style>
 </head>
 <body>
@@ -310,6 +322,16 @@
   </div>
 
   <script>
+
+    // iOS fixed-background workaround: disable 'fixed' on iOS/iPadOS
+    (function(){
+      try {
+        var ua = navigator.userAgent || '';
+        var isIOS = /iPad|iPhone|iPod/.test(ua) || (ua.indexOf('Mac') > -1 && 'ontouchend' in document);
+        if (isIOS) { document.body.classList.add('no-fixed-bg'); }
+      } catch (e) {}
+    })();
+
     // ===== Config =====
     // Toon hero-achtergrond op de intro-pagina
     document.body.classList.add('hero-intro');
