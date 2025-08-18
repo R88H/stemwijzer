@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Eenvoudige Kieswijzer – Snelle stemhulp voor Nederlandse verkiezingen</title>
-  <meta name="description" content="Onafhankelijke, snelle kieshulp. Vergelijk jouw mening met partijstandpunten via duidelijke stellingen. Privacy-vriendelijk en transparant.">
+  <title>Eenvoudige Kieswijzer – Welke partij past bij mij? (2025)</title>
+  <meta name="description" content="Eenvoudige kieswijzer 2025: beantwoord stellingen en zie direct welke partij bij je past. Snel, onafhankelijk en privacyvriendelijk – geen account, geen tracking." />
   <style>
     :root{
       --bg:#ffffff; --panel:#ffffff; --text:#0b1220; --muted:#5b6472; --line:#d7dbe3;
@@ -104,6 +104,9 @@
     /* Make About modal content scrollable on small screens */
     .aboutmodal .aboutcard{ max-height: 85vh; overflow: auto; }
 
+  
+    /* Keep Over-modal header (with Sluiten) visible while scrolling */
+    .abouthead{ position: sticky; top: 0; background:#fff; z-index: 2; }
   </style>
 <script type="application/ld+json">
   {
@@ -240,37 +243,38 @@ const STANDAARD = [
 
 // 30 EENVOUDIGE-stellingen
 const EENVOUDIG = [
-  {id:1,thema:'Wonen',tekst:'Meer huizen, sneller bouwen.',uitleg:'Extra regie en bouwlocaties om wachttijden te verkorten.'},
-  {id:2,thema:'Wonen',tekst:'Huur omlaag en strenger tegen misbruik.',uitleg:'Betaalbaar huren en optreden tegen huisjesmelkers.'},
-  {id:3,thema:'Wonen',tekst:'Starters en lokale inwoners voorrang.',uitleg:'Jongeren en vitale beroepen sneller aan een woning.'},
-  {id:4,thema:'Migratie',tekst:'Asielpauze bij volle opvang.',uitleg:'Eerst opvang op orde, dan instroom.'},
-  {id:5,thema:'Migratie',tekst:'Minder arbeidsmigratie waar het kan.',uitleg:'Alleen aantrekken wat nodig is en misstanden aanpakken.'},
-  {id:6,thema:'Zorg',tekst:'Minder of geen eigen risico.',uitleg:'Zorg toegankelijk maken en zorgmijding voorkomen.'},
-  {id:7,thema:'Kind/werk',tekst:'Kinderopvang bijna gratis.',uitleg:'Makkelijk werken en een goede start voor elk kind.'},
-  {id:8,thema:'Arbeid',tekst:'Lonen omhoog, werken loont.',uitleg:'Meer koopkracht en prikkel om te werken.'},
-  {id:9,thema:'Energie',tekst:'Kernenergie erbij.',uitleg:'Betrouwbare stroom naast zon en wind.'},
-  {id:10,thema:'Energie',tekst:'Meer zon en wind.',uitleg:'Sneller CO₂ verminderen met duurzame opwek.'},
-  {id:11,thema:'Warmte',tekst:'Warmtenetten in publieke handen.',uitleg:'Betaalbaar en betrouwbaar warmte leveren.'},
-  {id:12,thema:'OV',tekst:'Meer trein en bus.',uitleg:'Beter OV om files te verminderen.'},
-  {id:13,thema:'Wegen',tekst:'Knelpunten verbreden.',uitleg:'Doorstroming verbeteren waar het vaststaat.'},
-  {id:14,thema:'Luchtvaart',tekst:'Minder vliegen.',uitleg:'Minder geluid en uitstoot rondom vliegvelden.'},
-  {id:15,thema:'Energie',tekst:'Isolatie goedkoper maken.',uitleg:'Leningen en steun om energie te besparen.'},
-  {id:16,thema:'Veiligheid',tekst:'Zwaarder aanpakken van criminelen.',uitleg:'Meer politie en hogere straffen.'},
-  {id:17,thema:'Veiligheid',tekst:'Meer wijkagenten.',uitleg:'Zichtbaar in de buurt en sneller ingrijpen.'},
-  {id:18,thema:'Defensie',tekst:'Sterker leger (2% NAVO).',uitleg:'Veiligheid in een onzekere wereld.'},
-  {id:19,thema:'Europa',tekst:'Minder geld naar Brussel.',uitleg:'Meer zeggenschap in eigen land.'},
-  {id:20,thema:'Natuur',tekst:'Meer geld voor natuur.',uitleg:'Biodiversiteit en waterkwaliteit verbeteren.'},
-  {id:21,thema:'Landbouw',tekst:'Boeren zonder gedwongen krimp.',uitleg:'Eerlijke prijzen en innovatie in plaats van dwang.'},
-  {id:22,thema:'Stikstof',tekst:'Strengere regels waar nodig.',uitleg:'Natuur beschermen en vergunningen mogelijk maken.'},
-  {id:23,thema:'Zorg',tekst:'Geen winst in de zorg.',uitleg:'Zorggeld blijft in de zorg.'},
-  {id:24,thema:'Gokken',tekst:'Geen (online) gokreclame.',uitleg:'Minder verleiding en verslaving.'},
-  {id:25,thema:'Onderwijs',tekst:'Telefoons uit de klas.',uitleg:'Meer rust en focus.'},
-  {id:26,thema:'Onderwijs',tekst:'Meer leraren, kleinere klassen.',uitleg:'Betere kansen voor elk kind.'},
-  {id:27,thema:'Belastingen',tekst:'Meer belasting op vermogen, minder op werk.',uitleg:'Eerlijker verdeling en werken belonen.'},
-  {id:28,thema:'Democratie',tekst:'Burgerberaad bij grote keuzes.',uitleg:'Meer draagvlak door inspraak.'},
-  {id:29,thema:'Media',tekst:'Sterke publieke omroep óf bezuinigen?',uitleg:'Keuze tussen aanbod en lagere kosten.'},
-  {id:30,thema:'Europa',tekst:'EU: meer samenwerken of strenger aan de grens.',uitleg:'Balans tussen slagkracht en controle.'},
+  {id:1,thema:'Economie/Arbeid',tekst:'Minimumloon omhoog (leefbaar).',uitleg:'Koopkracht en zekerheid vergroten.'},
+  {id:2,thema:'Economie/Sociaal',tekst:'Sociaal minimum omhoog.',uitleg:'Basis op peil voor lage en middeninkomens.'},
+  {id:3,thema:'Zorg',tekst:'Eigen risico omlaag of weg.',uitleg:'Zorg toegankelijk houden.'},
+  {id:4,thema:'Onderwijs/Kind',tekst:'Kinderopvang bijna gratis.',uitleg:'Werken loont en kinderen krijgen kansen.'},
+  {id:5,thema:'Wonen',tekst:'Sneller veel meer huizen bouwen.',uitleg:'Wachttijden verkorten.'},
+  {id:6,thema:'Wonen',tekst:'Meer voorrang voor starters en middeninkomens.',uitleg:'Eerlijkere verdeling van (midden)huur.'},
+  {id:7,thema:'Wonen',tekst:'Gemeenten mogen eigen inwoners voorrang geven.',uitleg:'Lokale leefbaarheid beschermen.'},
+  {id:8,thema:'Wonen/Migratie',tekst:'Geen extra woonvoorrang voor statushouders.',uitleg:'Eerlijke verdeling van schaarse woningen.'},
+  {id:9,thema:'Migratie',tekst:'Asielpauze bij crisissituaties.',uitleg:'Eerst opvang en voorzieningen op orde.'},
+  {id:10,thema:'Migratie/Economie',tekst:'Strenger beleid op arbeidsmigratie.',uitleg:'Misstanden aanpakken en richten op behoefte.'},
+  {id:11,thema:'Europa/Migratie',tekst:'EU samen optrekken voor asiel en grens.',uitleg:'Gelijke regels en eerlijke verdeling.'},
+  {id:12,thema:'Klimaat/Energie',tekst:'Sneller CO₂ verminderen.',uitleg:'Transitie en doelen versnellen.'},
+  {id:13,thema:'Energie',tekst:'Kerncentrales erbij naast zon en wind.',uitleg:'Betrouwbare, schone stroom.'},
+  {id:14,thema:'Energie/Warmte',tekst:'Warmtenetten publiek geregeld.',uitleg:'Betaalbaar en betrouwbaar.'},
+  {id:15,thema:'Mobiliteit/OV',tekst:'Geen extra snelwegen; eerst OV.',uitleg:'Minder files via goed OV.'},
+  {id:16,thema:'Mobiliteit',tekst:'Wegknelpunten verbreden.',uitleg:'Doorstroming verbeteren.'},
+  {id:17,thema:'Luchtvaart',tekst:'Minder vliegen, strengere regels.',uitleg:'Minder geluid en uitstoot.'},
+  {id:18,thema:'Wonen/Energie',tekst:'Isoleren goedkoper en makkelijker.',uitleg:'Leningen en fiscale prikkels.'},
+  {id:19,thema:'Samenleving/Verslaving',tekst:'Strenger tegen gokken en reclame.',uitleg:'Verslaving voorkomen.'},
+  {id:20,thema:'Zorg',tekst:'Geen winst in de zorg.',uitleg:'Geld naar kwaliteit en toegang.'},
+  {id:21,thema:'Veiligheid/Justitie',tekst:'Harder tegen ondermijning en smokkel.',uitleg:'Meer capaciteit en hogere straffen.'},
+  {id:22,thema:'Veiligheid/Justitie',tekst:'Meer wijkagenten en snellere rechtspraak.',uitleg:'Zichtbaar en effectief optreden.'},
+  {id:23,thema:'Defensie',tekst:'Defensie naar 2% van het bbp.',uitleg:'NAVO-afspraak nakomen.'},
+  {id:24,thema:'Europa/Bestuur',tekst:'Minder geld en taken naar de EU.',uitleg:'Meer nationale zeggenschap.'},
+  {id:25,thema:'Natuur/Landbouw',tekst:'Streng stikstof; veestapel krimpen waar nodig.',uitleg:'Natuurherstel en vergunningen.'},
+  {id:26,thema:'Landbouw',tekst:'Geen verplichte krimp veestapel.',uitleg:'Liever innovatie en eerlijke prijzen.'},
+  {id:27,thema:'Bestuur/Democratie',tekst:'Burgerberaad en referenda gebruiken.',uitleg:'Meer inspraak en draagvlak.'},
+  {id:28,thema:'Veiligheid/Samenleving',tekst:'Strenger drugsbeleid; minder coffeeshops.',uitleg:'Schade en criminaliteit beperken.'},
+  {id:29,thema:'Financiën/Economie',tekst:'Meer investeren; schuld mag iets omhoog.',uitleg:'Toekomstgericht beleid.'},
+  {id:30,thema:'Belastingen/Economie',tekst:'Meer belasting op vermogen en winst, minder op werk.',uitleg:'Eerlijkere verdeling.'},
 ];
+
 
 const data = { standaard: STANDAARD, simpel: EENVOUDIG };
 
@@ -503,7 +507,7 @@ setupIntro();
 
   <h4>Waarom deze kieswijzer?</h4>
   <ul>
-    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee types (Standaard &amp; Eenvoudig).</li>
+    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee soorten (Standaard &amp; Eenvoudig).</li>
     <li><strong>Transparant:</strong> we scoren jouw keuze (-2 t/m +2) tegenover partijposities per stelling.</li>
     <li><strong>Privacy-vriendelijk:</strong> geen account nodig en er wordt niets opgeslagen.</li>
   </ul>
@@ -511,7 +515,7 @@ setupIntro();
   <h4>Hoe werkt de score?</h4>
   <p>Per stelling vergelijken we jouw antwoord met de positie van elke partij. Hoe dichterbij, hoe hoger de overeenkomst in procenten. Je ziet een gesorteerde lijst met partijmatches.</p>
 
-  <h4>Bronnen &amp; partijen</h4>
+  <h4>Partijen</h4>
   <p>Gebaseerd op de partijprogramma’s:</p>
   <ul>
     <li>CDA — programma 2023</li>
@@ -521,14 +525,11 @@ setupIntro();
     <li>GroenLinks–PvdA — programma 2023</li>
   </ul>
 
-  <h4>Veelgestelde vraag</h4>
-  <p><strong>Verschil tussen Standaard en Eenvoudig?</strong> De Eenvoudige versie gebruikt kortere, versimpelde stellingen van dezelfde inhoud.</p>
+  <h4>Verschil tussen Standaard en Eenvoudig?</h4>
+  <p>De Eenvoudige versie gebruikt kortere, versimpelde stellingen van dezelfde inhoud.</p>
 
   <h4>Contact</h4>
   <p>Feedback of suggesties? Mail: <a href="mailto:jouw@mailadres.nl">jouw@mailadres.nl</a>.</p>
-
-  <h4>Doneren</h4>
-  <p>Wil je dit vrijwillige project steunen? Doneer via <a href="#">GoFundMe</a>.</p>
 </div>
     </div>
   </div>
@@ -558,3 +559,4 @@ setupIntro();
 })();
 </script>
 </html>
+
