@@ -30,7 +30,20 @@
     .answers{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px }
     .answers button{ border:1px solid var(--line); background:#fff; padding:12px 8px; border-radius:10px; cursor:pointer; font-weight:600; transition: background-color .15s ease, border-color .15s ease; }
     .answers button:hover{ background:var(--accent-soft); border-color:var(--accent); } /* 1) hover-kleur */
-    .answers button.selected{ border-color:var(--accent); outline:2px solid var(--accent-soft) }
+    
+    
+    .answers button.selected{
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      outline: 1px solid var(--accent-soft);
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+        .answers button.selected::before{ content: none; }
+
+
     .controls{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap }
     .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600 }
     .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
@@ -72,6 +85,7 @@
   <header>
     <div class="wrap row">
       <h1 class="grow">Eenvoudige Kieswijzer</h1>
+      <button id="aboutBtn" class="btn ghost" type="button">Over</button>
       <div class="toggle" role="tablist" aria-label="Vraagmodus">
         <button id="btn-standaard" class="active" role="tab" aria-selected="true">Standaard vragen</button>
         <button id="btn-simpel" role="tab" aria-selected="false">Eenvoudige vragen</button>
@@ -423,14 +437,7 @@ setActiveToggle();
 renderQuestion();
 setupIntro();
 </script>
-
-  <div id="footerbar" class="footerbar">
-    <div class="wrap" style="display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:10px 16px;">
-      <button id="aboutBtn" class="btn ghost" type="button">Over</button>
-    </div>
-  </div>
-
-  <!-- About modal -->
+<!-- About modal -->
   <div id="aboutModal" class="aboutmodal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" style="display:none">
     <div class="aboutcard">
       <div class="abouthead">
