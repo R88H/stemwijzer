@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Eenvoudige Kieswijzer</title>
+  <title>Eenvoudige Kieswijzer – Snelle stemhulp voor Nederlandse verkiezingen</title>
+  <meta name="description" content="Onafhankelijke, snelle kieshulp. Vergelijk jouw mening met partijstandpunten via duidelijke stellingen. Privacy-vriendelijk en transparant.">
   <style>
     :root{
       --bg:#ffffff; --panel:#ffffff; --text:#0b1220; --muted:#5b6472; --line:#d7dbe3;
@@ -99,7 +100,39 @@
     /* Extra spacing above control buttons */
     #quiz .controls{ padding-top: 32px; }
 
+  
+    /* Make About modal content scrollable on small screens */
+    .aboutmodal .aboutcard{ max-height: 85vh; overflow: auto; }
+
   </style>
+<script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Hoe werkt de Eenvoudige Kieswijzer?",
+        "acceptedAnswer":{"@type":"Answer","text":"Je beantwoordt stellingen. We vergelijken jouw antwoord (-2 t/m +2) met partijposities. Hoe dichterbij, hoe hoger je match in %."}
+      },
+      {
+        "@type":"Question",
+        "name":"Is de kieswijzer onafhankelijk?",
+        "acceptedAnswer":{"@type":"Answer","text":"Ja. De tool is onafhankelijk en gebaseerd op partijprogramma’s en openbare standpunten."}
+      },
+      {
+        "@type":"Question",
+        "name":"Hoe zit het met privacy?",
+        "acceptedAnswer":{"@type":"Answer","text":"Alles draait lokaal in je browser. Er wordt niets opgeslagen of doorgestuurd."}
+      },
+      {
+        "@type":"Question",
+        "name":"Wat is het verschil tussen Standaard en Eenvoudig?",
+        "acceptedAnswer":{"@type":"Answer","text":"De Eenvoudige modus gebruikt versimpelde formuleringen van dezelfde stellingen voor sneller invullen."}
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <header>
@@ -465,29 +498,38 @@ setupIntro();
         <button id="aboutClose" class="btn" type="button" aria-label="Sluiten">Sluiten</button>
       </div>
       <div class="aboutcontent">
-        <p><strong>Doel:</strong> je snel een indicatie geven welke partijstandpunten het meest overeenkomen met jouw antwoorden. Alles draait in je browser; er wordt niets opgeslagen.</p>
+  <p><strong>Over deze kieswijzer</strong><br>
+  De <em>Eenvoudige Kieswijzer</em> is een onafhankelijke, snelle <strong>stemhulp / kieshulp</strong> voor de Tweede Kamerverkiezingen op 29 oktober 2025 in Nederland. In duidelijke stellingen vergelijk je jouw mening met de standpunten van politieke partijen. Resultaat: een heldere match per partij.</p>
 
-        <h4>Veelgestelde vragen</h4>
-        <p><strong>Hoe werkt het matchen?</strong> Per stelling vergelijken we jouw keuze (-2 t/m +2) met partijposities. Hoe dichterbij, hoe hoger het percentage.</p>
-        <p><strong>Is dit officieel?</strong> Nee. Het is een onafhankelijke, eenvoudige tool op basis van verkiezingsprogramma’s.</p>
-        <p><strong>Privacy?</strong> Antwoorden blijven lokaal in je browser.</p>
+  <h4>Waarom deze kieswijzer?</h4>
+  <ul>
+    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee types (Standaard &amp; Eenvoudig).</li>
+    <li><strong>Transparant:</strong> we scoren jouw keuze (-2 t/m +2) tegenover partijposities per stelling.</li>
+    <li><strong>Privacy-vriendelijk:</strong> geen account nodig en er wordt niets opgeslagen.</li>
+  </ul>
 
-        <h4>Welke verkiezingsprogramma’s zijn meegenomen?</h4>
-        <ul>
-          <li>BBB — programma nov 2023</li>
-          <li>VVD — programma 2023–2027</li>
-          <li>CDA — programma 2023–2027</li>
-          <li>GroenLinks–PvdA — programma 2023</li>
-        </ul>
+  <h4>Hoe werkt de score?</h4>
+  <p>Per stelling vergelijken we jouw antwoord met de positie van elke partij. Hoe dichterbij, hoe hoger de overeenkomst in procenten. Je ziet een gesorteerde lijst met partijmatches.</p>
 
-        <p><strong>Bronnen (PDF’s):</strong> BBB · VVD · CDA · GL-PvdA</p>
+  <h4>Bronnen &amp; partijen</h4>
+  <p>Gebaseerd op de partijprogramma’s:</p>
+  <ul>
+    <li>CDA — programma 2023</li>
+    <li>ChristenUnie — programma 2023</li>
+    <li>VVD — programma 2023</li>
+    <li>PVV — programma 2023</li>  
+    <li>GroenLinks–PvdA — programma 2023</li>
+  </ul>
 
-        <h4>Contact</h4>
-        <p>Heb je feedback? Stuur een mail naar <a href="mailto:jouw@mailadres.nl">jouw@mailadres.nl</a> (pas dit aan in de HTML).</p>
+  <h4>Veelgestelde vraag</h4>
+  <p><strong>Verschil tussen Standaard en Eenvoudig?</strong> De Eenvoudige versie gebruikt kortere, versimpelde stellingen van dezelfde inhoud.</p>
 
-        <h4>Doneren</h4>
-        <p>Wil je dit vrijwillige project steunen? Doneer via <a href="#" rel="noopener">GoFundMe</a>.</p>
-      </div>
+  <h4>Contact</h4>
+  <p>Feedback of suggesties? Mail: <a href="mailto:jouw@mailadres.nl">jouw@mailadres.nl</a>.</p>
+
+  <h4>Doneren</h4>
+  <p>Wil je dit vrijwillige project steunen? Doneer via <a href="#">GoFundMe</a>.</p>
+</div>
     </div>
   </div>
 </body>
