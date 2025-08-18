@@ -79,6 +79,26 @@
     body.intro-active main .card{ display:none !important; }
     body.intro-active #intro{ display:block !important; }
 
+  
+    /* Fix controls position: keep at bottom of quiz card */
+    #quiz{ display:flex; flex-direction:column; min-height: 360px; }
+    #quiz .answers{ flex:1; }
+    #quiz .controls{ margin-top:auto; }
+
+  
+    /* Mobile: keep controls fixed at bottom of the question card */
+    @media (max-width: 640px){
+      #quiz{ min-height: 70vh; }
+    }
+
+  
+    /* Keep clear spacing between answers and fixed controls */
+    #quiz{ gap: 16px; }
+
+  
+    /* Extra spacing above control buttons */
+    #quiz .controls{ padding-top: 32px; }
+
   </style>
 </head>
 <body>
