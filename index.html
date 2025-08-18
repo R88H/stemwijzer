@@ -105,8 +105,11 @@
     .aboutmodal .aboutcard{ max-height: 85vh; overflow: auto; }
 
   
-    /* Keep Over-modal header (with Sluiten) visible while scrolling */
-    .abouthead{ position: sticky; top: 0; background:#fff; z-index: 2; }
+    /* Over-modal: header always visible; content scrolls; clip to rounded corners */
+    .aboutcard{ max-height:85vh; overflow:hidden; display:flex; flex-direction:column; }
+    .abouthead{ position:sticky; top:0; background:#fff; z-index:2; box-shadow:0 1px 0 var(--line); }
+    .aboutcontent{ overflow:auto; }
+
   </style>
 <script type="application/ld+json">
   {
@@ -152,10 +155,22 @@
 
   <section id="intro" class="intro">
     <div class="wrap">
-      <div class="card" style="text-align:center">
-<p class="muted" style="margin:0 0 16px">Klik op <strong>Start</strong> om te beginnen.</p>
-        <button id="startIntro" class="btn primary" type="button">Start</button>
-      </div>
+      <div class="card" style="text-align:left">
+        <h2 style="margin:0 0 8px">Start de Eenvoudige Kieswijzer</h2>
+<p class="muted" style="margin:0 0 12px">
+  Op zoek naar een snelle <strong>kieswijzer</strong> voor 2025? 
+  Met deze onafhankelijke <strong>kieshulp / stemhulp</strong> ontdek je in enkele minuten 
+  <em>welke partij het beste bij jou past</em>. Je beantwoordt duidelijke stellingen en ziet direct jouw match per partij in %.
+  Volledig privacyvriendelijk: geen account nodig en er wordt niets opgeslagen.
+</p>
+<ul class="muted" style="text-align:left; display:inline-block; margin:0 0 16px 0;">
+  <li>30 stellingen – Standaard &amp; Eenvoudig</li>
+  <li>Heldere match per partij in procenten</li>
+  <li>Snel, onafhankelijk en privacyvriendelijk</li>
+</ul>
+<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om te beginnen.</p>
+<button id="startIntro" class="btn primary" type="button">Start</button>
+        </div>
     </div>
   </section>
 
@@ -507,7 +522,7 @@ setupIntro();
 
   <h4>Waarom deze kieswijzer?</h4>
   <ul>
-    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee soorten (Standaard &amp; Eenvoudig).</li>
+    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee types (Standaard &amp; Eenvoudig).</li>
     <li><strong>Transparant:</strong> we scoren jouw keuze (-2 t/m +2) tegenover partijposities per stelling.</li>
     <li><strong>Privacy-vriendelijk:</strong> geen account nodig en er wordt niets opgeslagen.</li>
   </ul>
@@ -515,7 +530,7 @@ setupIntro();
   <h4>Hoe werkt de score?</h4>
   <p>Per stelling vergelijken we jouw antwoord met de positie van elke partij. Hoe dichterbij, hoe hoger de overeenkomst in procenten. Je ziet een gesorteerde lijst met partijmatches.</p>
 
-  <h4>Partijen</h4>
+  <h4>Bronnen</h4>
   <p>Gebaseerd op de partijprogramma’s:</p>
   <ul>
     <li>CDA — programma 2023</li>
@@ -530,6 +545,9 @@ setupIntro();
 
   <h4>Contact</h4>
   <p>Feedback of suggesties? Mail: <a href="mailto:jouw@mailadres.nl">jouw@mailadres.nl</a>.</p>
+
+  <h4>Doneren</h4>
+  <p>Wil je dit vrijwillige project steunen? Doneer via <a href="#">GoFundMe</a>.</p>
 </div>
     </div>
   </div>
