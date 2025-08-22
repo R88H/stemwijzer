@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V429RK8QJP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-V429RK8QJP');
+</script>
+
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Eenvoudige Kieswijzer – Welke partij past bij mij? (2025)</title>
+  <meta name="description" content="Eenvoudige kieswijzer 2025: beantwoord stellingen en zie direct welke partij bij je past. Snel, onafhankelijk en privacyvriendelijk – geen account, geen tracking." />
+  <style>
+    :root{
+      --bg:#ffffff; --panel:#ffffff; --text:#0b1220; --muted:#5b6472; --line:#d7dbe3;
+      --accent:#0a3d91; --accent-soft:#eef2ff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{ margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial; color:var(--text); background:var(--bg) }
+    header{ position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid var(--line) }
+    .wrap{ max-width:980px; margin:0 auto; padding:16px }
+    .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    .grow{ flex:1 }
+    h1{ font-size:20px; margin:8px 0 }
+    .toggle{ display:inline-flex; gap:6px; border:1px solid var(--line); border-radius:999px; padding:4px }
+    .toggle button{ border:0; background:transparent; padding:8px 14px; border-radius:999px; cursor:pointer; font-weight:600 }
+    .toggle button.active{ background:var(--accent-soft); color:var(--accent) }
+    main{ padding:24px 16px }
+    .card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px }
+    .muted{ color:var(--muted) }
+    .progress{ height:8px; background:#f3f4f6; border-radius:999px; overflow:hidden; margin:4px 0 16px }
+    .bar{ height:100%; width:0; background:var(--accent) }
+    .qhead{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 4px }
+    .qmeta{ display:flex; align-items:center; gap:8px }
+    .theme{ display:inline-block; font-size:12px; font-weight:700;
+      color: var(--accent); background: var(--accent-soft);
+      border:1px solid var(--line); border-radius:999px; padding:4px 10px; }
+    
+    .qtheme{ margin:4px 0 8px }
+    .theme{ display:inline-block; font-size:12px; font-weight:700; 
+      color: var(--accent); background: var(--accent-soft); 
+      border:1px solid var(--line); border-radius:999px; padding:4px 10px; }
+
+    .qtext{ font-size:22px; font-weight:700 }
+    .answers{ display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-top:10px }
+    .answers button{ border:1px solid var(--line); background:#fff; padding:12px 8px; border-radius:10px; cursor:pointer; font-weight:600; transition: background-color .15s ease, border-color .15s ease; }
+    .answers button:hover{ background:var(--accent-soft); border-color:var(--accent); } /* 1) hover-kleur */
+    
+    
+    .answers button.selected{
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      outline: 1px solid var(--accent-soft);
+      box-shadow: none;
+      font-weight: 700;
+    }
+
+        .answers button.selected::before{ content: none; }
+
+
+    .controls{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap }
+    .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600 }
+    .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
+    .btn.ghost{ background:transparent }
+    .explain{ display:none; padding:12px; border:1px dashed var(--line); border-radius:10px; background:#fafafa; margin-top:12px }
+    /* Result list */
+    .plist{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
+    .prow{ display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fff }
+    .rank{ font-weight:800; width:28px; text-align:center }
+    .party{ font-weight:700 }
+    .pct{ margin-left:auto; font-variant-numeric: tabular-nums; color:var(--muted) }
+    @media (max-width:640px){
+      .answers{ grid-template-columns: 1fr; }
+    }
+    /* Hide the subtitle line on results entirely */
+    #resultSubtitle{ display:none !important; }
+  
+    /* Light neutral bottom bar + About modal */
+    .footerbar{ position:fixed; left:0; right:0; bottom:0; background:#f8fafc; border-top:1px solid var(--line); z-index:30; }
+    .aboutmodal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); z-index:40; padding:16px; }
+    .aboutcard{ max-width:760px; width:100%; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
+    .abouthead{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+    .aboutcontent h4{ margin:14px 0 6px; }
+    .aboutcontent p, .aboutcontent li{ line-height:1.45; }
+
+  
+    .intro{ padding:24px 0; }
+
+  
+    /* Intro-mode: hide quiz/progress/toggle on intro screen */
+    body.intro-active .toggle{ display:none !important; }
+    body.intro-active .progress{ display:none !important; }
+    body.intro-active main .card{ display:none !important; }
+    body.intro-active #intro{ display:block !important; }
+
+  
+    /* Fix controls position: keep at bottom of quiz card */
+    #quiz{ display:flex; flex-direction:column; min-height: 360px; }
+    #quiz .answers{ flex:1; }
+    #quiz .controls{ margin-top:auto; }
+
+  
+    /* Mobile: keep controls fixed at bottom of the question card */
+    @media (max-width: 640px){
+      #quiz{ min-height: 70vh; }
+    }
+
+  
+    /* Keep clear spacing between answers and fixed controls */
+    #quiz{ gap: 16px; }
+
+  
+    /* Extra spacing above control buttons */
+    #quiz .controls{ padding-top: 32px; }
+
+  
+    /* Make About modal content scrollable on small screens */
+    .aboutmodal .aboutcard{ max-height: 85vh; overflow: auto; }
+
+  
+    /* Over-modal: header always visible; content scrolls; clip to rounded corners */
+    .aboutcard{ max-height:85vh; overflow:hidden; display:flex; flex-direction:column; }
+    .abouthead{ position:sticky; top:0; background:#fff; z-index:2; box-shadow:0 1px 0 var(--line); }
+    .aboutcontent{ overflow:auto; }
+
+  
+/* Intro: betere alinea- en lijstafstand (mobiel + desktop) */
+#intro .card p { 
+  margin: 0 0 14px; 
+  line-height: 1.6;
+}
+#intro .card ul { 
+  margin: 0 0 16px 1.25rem; 
+  padding-left: 1.25rem;
+}
+#intro .card li { 
+  margin: 0 0 6px; 
+}
+
+  </style>
+<script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"Hoe werkt de Eenvoudige Kieswijzer?",
+        "acceptedAnswer":{"@type":"Answer","text":"Je beantwoordt stellingen. We vergelijken jouw antwoord (-2 t/m +2) met partijposities. Hoe dichterbij, hoe hoger je match in %."}
+      },
+      {
+        "@type":"Question",
+        "name":"Is de kieswijzer onafhankelijk?",
+        "acceptedAnswer":{"@type":"Answer","text":"Ja. De tool is onafhankelijk en gebaseerd op partijprogramma’s en openbare standpunten."}
+      },
+      {
+        "@type":"Question",
+        "name":"Hoe zit het met privacy?",
+        "acceptedAnswer":{"@type":"Answer","text":"Alles draait lokaal in je browser. Er wordt niets opgeslagen of doorgestuurd."}
+      },
+      {
+        "@type":"Question",
+        "name":"Wat is het verschil tussen Standaard en Eenvoudig?",
+        "acceptedAnswer":{"@type":"Answer","text":"De Eenvoudige modus gebruikt versimpelde formuleringen van dezelfde stellingen voor sneller invullen."}
+      }
+    ]
+  }
+  </script>
+  <link rel="canonical" href="https://www.eenvoudige-kieswijzer.nl/">
+</head>
+<body>
+  <header>
+    <div class="wrap row">
+      <h1 class="grow">Eenvoudige Kieswijzer</h1>
+      <button id="aboutBtn" class="btn ghost" type="button">Over</button>
+      <div class="toggle" role="tablist" aria-label="Vraagmodus">
+        <button id="btn-standaard" class="active" role="tab" aria-selected="true">Standaard vragen</button>
+        <button id="btn-simpel" role="tab" aria-selected="false">Eenvoudige vragen</button>
+      </div>
+    </div>
+  </header>
+
+
+  <section id="intro" class="intro">
+    <div class="wrap">
+      <div class="card" style="text-align:left">
+        <h2 style="margin:0 0 8px">Start de Eenvoudige Kieswijzer</h2>
+
+<p class="muted" style="margin:0 0 12px">
+  Op zoek naar een snelle <strong>kieswijzer</strong> voor de Tweede Kamerverkiezingen op 29 oktober 2025? Met deze onafhankelijke
+  <strong>kieshulp / stemhulp</strong> ontdek je in enkele minuten 
+  <em>welke partij het beste bij jou past</em>. Je beantwoordt duidelijke stellingen en
+  ziet direct jouw match per partij in %.
+</p>
+<p class="muted" style="margin:0 0 12px">
+  Volledig privacyvriendelijk: geen account nodig.
+</p>
+
+<ul class="muted" style="text-align:left; display:inline-block; margin:0 0 16px 0;">
+  <li>30 stellingen – Standaard &amp; Eenvoudig</li>
+  <li>Heldere match per partij in procenten</li>
+  <li>Snel, onafhankelijk en privacyvriendelijk</li>
+</ul>
+
+<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om te beginnen.</p>
+<button id="startIntro" class="btn primary" type="button">Start</button>
+        </div>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="card">
+      <div class="progress" aria-hidden="true">
+        <div id="bar" class="bar"></div>
+      </div>
+
+      <div id="quiz">
+        <div class="qhead">
+          <div class="qmeta"><div id="status" class="status">Vraag 1 / 30</div><span id="qtheme" class="theme"></span></div><button id="btn-explain" class="btn ghost" aria-expanded="false">Uitleg</button></div>
+        <div id="questionText" class="qtext">—</div>
+        <div id="explain" class="explain" aria-live="polite"></div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="controls">
+          <button id="prev" class="btn">Vorige</button>
+          <button id="next" class="btn">Volgende</button>
+          <button id="skip" class="btn">Overslaan</button>
+        </div>
+      </div>
+
+      <div id="results">
+        <h2 style="margin:0 0 8px">Resultaat</h2>
+        <p class="muted" id="resultSubtitle">—</p>
+
+        <!-- Alleen partijpercentages (hoogste eerst) -->
+        <div id="partyList" class="plist"></div>
+
+        <div class="controls" style="margin-top:18px">
+          <button id="backToQuiz" class="btn">Terug naar vragen</button>
+          <button id="restart" class="btn ghost">Opnieuw (alle antwoorden wissen)</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+// Antwoordopties (links→rechts)
+const ANSWER_SCALE = [
+  { label:'Helemaal oneens', value: -2 },
+  { label:'Oneens', value: -1 },
+  { label:'Neutraal/geen mening', value: 0 },
+  { label:'Eens', value: 1 },
+  { label:'Helemaal eens', value: 2 },
+];
+
+// 30 STANDAARD-stellingen
+const STANDAARD = [
+  {
+    "id": 1,
+    "thema": "Wonen",
+    "tekst": "De overheid moet jaarlijks 100.000 woningen bouwen, waarvan minstens twee derde betaalbaar is.",
+    "uitleg": "Meetlat voor bouwtempo en aandeel betaalbare huur/koop in de nieuwbouw."
+  },
+  {
+    "id": 2,
+    "thema": "Wonen",
+    "tekst": "Speculatiewinsten op grond bij bestemmingswijziging moeten grotendeels naar de samenleving vloeien.",
+    "uitleg": "Vraag of grondwaardestijgingen bij bv. landbouw→wonen vooral publiek of privaat terechtkomen."
+  },
+  {
+    "id": 3,
+    "thema": "Wonen",
+    "tekst": "Bescherming tegen woekerhuren moet voor álle huurwoningen gelden en vaste huurcontracten blijven de norm.",
+    "uitleg": "Stelling over regulering in zowel sociale als vrije sector en het beperken van flexhuur."
+  },
+  {
+    "id": 4,
+    "thema": "Wonen",
+    "tekst": "Er komt een Nationaal Woonfonds om (honderdduizenden) betaalbare huurwoningen zonder winstoogmerk te realiseren.",
+    "uitleg": "Publieke of non-profit financiering/ontwikkeling om betaalbaar aanbod op te schalen."
+  },
+  {
+    "id": 5,
+    "thema": "Wonen",
+    "tekst": "De huren worden tijdelijk bevroren om woonlasten te verlagen.",
+    "uitleg": "Ingrijpen in huurprijsstijgingen om koopkracht te beschermen."
+  },
+  {
+    "id": 6,
+    "thema": "Wonen",
+    "tekst": "Statushouders moeten (weer) voorrang krijgen op sociale huur.",
+    "uitleg": "Keuze tussen voorrang voor statushouders of gelijke behandeling met andere woningzoekenden."
+  },
+  {
+    "id": 7,
+    "thema": "Klimaat & Energie",
+    "tekst": "Fossiele subsidies worden afgebouwd; grote vervuilers gaan meer betalen (‘de vervuiler betaalt’).",
+    "uitleg": "Schuif lasten naar uitstoters om verduurzaming te versnellen en concurrentie te waarborgen."
+  },
+  {
+    "id": 8,
+    "thema": "Klimaat & Energie",
+    "tekst": "Klimaatdoelen en -maatregelen moeten worden herzien als ze onhaalbaar of onbetaalbaar blijken.",
+    "uitleg": "‘Klimaatrealisme’: bijsturen op uitvoerbaarheid en kosten, eventueel met aangepaste doelen."
+  },
+  {
+    "id": 9,
+    "thema": "Klimaat & Energie",
+    "tekst": "Nederland moet in 2040 klimaatneutraal zijn en 65% CO₂-reductie in 2030 nastreven.",
+    "uitleg": "Ambitieniveau van nationale klimaatdoelen ten opzichte van EU-richtlijnen."
+  },
+  {
+    "id": 10,
+    "thema": "Gezondheid & Leefstijl",
+    "tekst": "Er mag géén suikertaks of vleesbelasting komen.",
+    "uitleg": "Afweging tussen prijsprikkels voor gezondheid/klimaat en keuzevrijheid/koopkracht."
+  },
+  {
+    "id": 11,
+    "thema": "Klimaat & Energie",
+    "tekst": "Wind op zee moet fors worden uitgebreid, met natuurinclusief ontwerp en strikte ecologische toetsing.",
+    "uitleg": "Opschalen van hernieuwbare energie versus impact op natuur en ruimtegebruik."
+  },
+  {
+    "id": 12,
+    "thema": "Mobiliteit & OV",
+    "tekst": "Er komt een landelijk Klimaatticket: voor een vast laag bedrag per maand onbeperkt reizen met het ov in daluren.",
+    "uitleg": "Landelijke ov-abonnementen om gebruik te stimuleren en files/uitstoot te beperken."
+  },
+  {
+    "id": 13,
+    "thema": "Mobiliteit & OV",
+    "tekst": "Openbaar vervoer wordt gefaseerd gratis voor iedereen.",
+    "uitleg": "Gratis ov als publiek basisvoorziening versus kosten en betaalbaarheid."
+  },
+  {
+    "id": 14,
+    "thema": "Zorg",
+    "tekst": "Het eigen risico in de zorg wordt afgeschaft en we gaan naar één publiek Nationaal ZorgFonds.",
+    "uitleg": "Solidarische financiering zonder eigen risico tegenover kostenbeheersing en keuzevrijheid."
+  },
+  {
+    "id": 15,
+    "thema": "Zorg & Ethiek",
+    "tekst": "Euthanasie bij ernstig psychisch lijden voor jongeren onder de 30 wordt stopgezet totdat passende zorg is geborgd.",
+    "uitleg": "Spanning tussen autonomie en bescherming van kwetsbare jongeren met psychische problemen."
+  },
+  {
+    "id": 16,
+    "thema": "Zorg & Ethiek",
+    "tekst": "De beraadtermijn bij abortus wordt heringevoerd en de wekengrens blijft gekoppeld aan levensvatbaarheid.",
+    "uitleg": "Accenten in abortuswetgeving: bedenktijd en medische grens versus reproductieve keuzevrijheid."
+  },
+  {
+    "id": 17,
+    "thema": "Gezondheid & Leefstijl",
+    "tekst": "Preventieve zorg komt volledig in het basispakket en btw op groente en fruit gaat naar 0%.",
+    "uitleg": "Investeren in preventie en gezonde voeding ter verlaging van zorgvraag en kosten."
+  },
+  {
+    "id": 18,
+    "thema": "Milieu & Gezondheid",
+    "tekst": "Het recht op een gezonde leefomgeving wordt wettelijk vastgelegd met strengere normen voor o.a. luchtvervuiling en PFAS.",
+    "uitleg": "Juridische borging van gezondheid en milieu met harde kwaliteitsnormen."
+  },
+  {
+    "id": 19,
+    "thema": "Migratie & Asiel",
+    "tekst": "Asielopvang op Nederlands grondgebied moet worden beëindigd; toewerken naar een asielstop.",
+    "uitleg": "Beperking van asielinstroom en opvang versus internationale verplichtingen en mensenrechten."
+  },
+  {
+    "id": 20,
+    "thema": "Migratie & Asiel",
+    "tekst": "‘Eerste veilige land’ wordt strikt gehandhaafd en er komt een tweestatusstelsel voor bescherming.",
+    "uitleg": "Aanpassing van asielbeleid: opvang dichter bij herkomst en onderscheid in beschermingsstatussen."
+  },
+  {
+    "id": 21,
+    "thema": "Migratie & Asiel",
+    "tekst": "Internationale migratieverdragen worden herzien om nationale soevereiniteit te herstellen.",
+    "uitleg": "Herschikking van verdragsverplichtingen om eigen migratieregels te kunnen aanscherpen."
+  },
+  {
+    "id": 22,
+    "thema": "Democratie & Bestuur",
+    "tekst": "Het correctief bindend referendum wordt ingevoerd.",
+    "uitleg": "Burgers kunnen aangenomen wetten achteraf tegenhouden via een nationaal referendum."
+  },
+  {
+    "id": 23,
+    "thema": "Defensie & Buitenland",
+    "tekst": "Nederland gaat voldoen aan een hogere NAVO-norm: 3,5% van het bbp naar defensie.",
+    "uitleg": "Opschaling defensie-uitgaven voor bondgenootschappelijke verplichtingen en veiligheid."
+  },
+  {
+    "id": 24,
+    "thema": "Defensie & Buitenland",
+    "tekst": "Er moet een trendbreuk komen tegen verdere militarisering; extra defensie-eisen gaan niet ten koste van zorg en onderwijs.",
+    "uitleg": "Begrotingskeuzes tussen defensie en sociale sectoren bij geopolitieke spanningen."
+  },
+  {
+    "id": 25,
+    "thema": "Belastingen",
+    "tekst": "De hypotheekrenteaftrek wordt stapsgewijs afgebouwd.",
+    "uitleg": "Vereenvoudiging en herverdeling in de woningmarkt versus koopkracht van huiseigenaren."
+  },
+  {
+    "id": 26,
+    "thema": "Belastingen",
+    "tekst": "Er komt een miljonairsbelasting voor de allerrijksten.",
+    "uitleg": "Hogere heffing op grote vermogens voor herverdeling en publieke investeringen."
+  },
+  {
+    "id": 27,
+    "thema": "Economie & Koopkracht",
+    "tekst": "Maximumprijzen voor basisproducten zoals gezond eten en energie worden ingevoerd.",
+    "uitleg": "Prijsplafonds om koopkracht te beschermen versus markteffecten en leveringszekerheid."
+  },
+  {
+    "id": 28,
+    "thema": "Economie & Industriebeleid",
+    "tekst": "Er komt een Nationale Investeringsbank die strategische sectoren financiert; meer durfkapitaal naar groeibedrijven.",
+    "uitleg": "Publiek-privaat kapitaal voor innovatie en strategische autonomie."
+  },
+  {
+    "id": 29,
+    "thema": "Mobiliteit & OV",
+    "tekst": "Betalen-naar-gebruik voor automobilisten wordt versneld ingevoerd, met regionale en tijdsafhankelijke differentiatie.",
+    "uitleg": "Kilometerheffing als vervanger van vaste autobelastingen om files en uitstoot te sturen."
+  },
+  {
+    "id": 30,
+    "thema": "Digitale & Consumentenrechten",
+    "tekst": "Het recht om contant te betalen wordt wettelijk geborgd.",
+    "uitleg": "Waarborg dat winkels en diensten cash blijven accepteren naast digitaal betalen."
+  }
+];
+
+// 30 EENVOUDIGE-stellingen
+const EENVOUDIG = [
+  {
+    "id": 1,
+    "thema": "Wonen",
+    "tekst": "Elk jaar 100.000 (betaalbare) huizen bouwen.",
+    "uitleg": "Meetlat voor bouwtempo en aandeel betaalbare huur/koop in de nieuwbouw."
+  },
+  {
+    "id": 2,
+    "thema": "Wonen",
+    "tekst": "Grondwinsten bij bestemmingswijziging deels naar de samenleving.",
+    "uitleg": "Vraag of grondwaardestijgingen bij bv. landbouw→wonen vooral publiek of privaat terechtkomen."
+  },
+  {
+    "id": 3,
+    "thema": "Wonen",
+    "tekst": "Sterke huurdersbescherming en vaste contracten.",
+    "uitleg": "Stelling over regulering in zowel sociale als vrije sector en het beperken van flexhuur."
+  },
+  {
+    "id": 4,
+    "thema": "Wonen",
+    "tekst": "Nationaal Woonfonds voor betaalbare huur.",
+    "uitleg": "Publieke of non-profit financiering/ontwikkeling om betaalbaar aanbod op te schalen."
+  },
+  {
+    "id": 5,
+    "thema": "Wonen",
+    "tekst": "Huren tijdelijk bevriezen.",
+    "uitleg": "Ingrijpen in huurprijsstijgingen om koopkracht te beschermen."
+  },
+  {
+    "id": 6,
+    "thema": "Wonen",
+    "tekst": "Voorrang sociale huur voor statushouders.",
+    "uitleg": "Keuze tussen voorrang voor statushouders of gelijke behandeling met andere woningzoekenden."
+  },
+  {
+    "id": 7,
+    "thema": "Klimaat & Energie",
+    "tekst": "Fossiele subsidies afbouwen; vervuiler betaalt.",
+    "uitleg": "Schuif lasten naar uitstoters om verduurzaming te versnellen en concurrentie te waarborgen."
+  },
+  {
+    "id": 8,
+    "thema": "Klimaat & Energie",
+    "tekst": "Klimaatdoelen bijstellen als onhaalbaar/ onbetaalbaar.",
+    "uitleg": "‘Klimaatrealisme’: bijsturen op uitvoerbaarheid en kosten, eventueel met aangepaste doelen."
+  },
+  {
+    "id": 9,
+    "thema": "Klimaat & Energie",
+    "tekst": "Nederland klimaatneutraal in 2040 (65% CO₂ in 2030).",
+    "uitleg": "Ambitieniveau van nationale klimaatdoelen ten opzichte van EU-richtlijnen."
+  },
+  {
+    "id": 10,
+    "thema": "Gezondheid & Leefstijl",
+    "tekst": "Geen suikertaks of vleesbelasting.",
+    "uitleg": "Afweging tussen prijsprikkels voor gezondheid/klimaat en keuzevrijheid/koopkracht."
+  },
+  {
+    "id": 11,
+    "thema": "Klimaat & Energie",
+    "tekst": "Meer wind op zee met natuurbescherming.",
+    "uitleg": "Opschalen van hernieuwbare energie versus impact op natuur en ruimtegebruik."
+  },
+  {
+    "id": 12,
+    "thema": "Mobiliteit & OV",
+    "tekst": "Landelijk ov-klimaatticket (lage prijs, daluren).",
+    "uitleg": "Landelijke ov-abonnementen om gebruik te stimuleren en files/uitstoot te beperken."
+  },
+  {
+    "id": 13,
+    "thema": "Mobiliteit & OV",
+    "tekst": "OV (stapsgewijs) gratis.",
+    "uitleg": "Gratis ov als publiek basisvoorziening versus kosten en betaalbaarheid."
+  },
+  {
+    "id": 14,
+    "thema": "Zorg",
+    "tekst": "Eigen risico afschaffen; Nationaal ZorgFonds.",
+    "uitleg": "Solidarische financiering zonder eigen risico tegenover kostenbeheersing en keuzevrijheid."
+  },
+  {
+    "id": 15,
+    "thema": "Zorg & Ethiek",
+    "tekst": "Stop euthanasie <30 bij psychisch lijden (tijdelijk).",
+    "uitleg": "Spanning tussen autonomie en bescherming van kwetsbare jongeren met psychische problemen."
+  },
+  {
+    "id": 16,
+    "thema": "Zorg & Ethiek",
+    "tekst": "Beraadtermijn terug; abortusgrens bij levensvatbaarheid.",
+    "uitleg": "Accenten in abortuswetgeving: bedenktijd en medische grens versus reproductieve keuzevrijheid."
+  },
+  {
+    "id": 17,
+    "thema": "Gezondheid & Leefstijl",
+    "tekst": "Preventie in basispakket; 0% btw groente/fruit.",
+    "uitleg": "Investeren in preventie en gezonde voeding ter verlaging van zorgvraag en kosten."
+  },
+  {
+    "id": 18,
+    "thema": "Milieu & Gezondheid",
+    "tekst": "Recht op gezonde leefomgeving; strengere PFAS/lucht-normen.",
+    "uitleg": "Juridische borging van gezondheid en milieu met harde kwaliteitsnormen."
+  },
+  {
+    "id": 19,
+    "thema": "Migratie & Asiel",
+    "tekst": "Toewerken naar asielstop in NL.",
+    "uitleg": "Beperking van asielinstroom en opvang versus internationale verplichtingen en mensenrechten."
+  },
+  {
+    "id": 20,
+    "thema": "Migratie & Asiel",
+    "tekst": "Strikt ‘eerste veilige land’ en tweestatusstelsel.",
+    "uitleg": "Aanpassing van asielbeleid: opvang dichter bij herkomst en onderscheid in beschermingsstatussen."
+  },
+  {
+    "id": 21,
+    "thema": "Migratie & Asiel",
+    "tekst": "Migratieverdragen herzien voor meer nationale regie.",
+    "uitleg": "Herschikking van verdragsverplichtingen om eigen migratieregels te kunnen aanscherpen."
+  },
+  {
+    "id": 22,
+    "thema": "Democratie & Bestuur",
+    "tekst": "Correctief bindend referendum invoeren.",
+    "uitleg": "Burgers kunnen aangenomen wetten achteraf tegenhouden via een nationaal referendum."
+  },
+  {
+    "id": 23,
+    "thema": "Defensie & Buitenland",
+    "tekst": "Defensiebudget naar 3,5% bbp.",
+    "uitleg": "Opschaling defensie-uitgaven voor bondgenootschappelijke verplichtingen en veiligheid."
+  },
+  {
+    "id": 24,
+    "thema": "Defensie & Buitenland",
+    "tekst": "Geen extra militarisering; niet ten koste van zorg/onderwijs.",
+    "uitleg": "Begrotingskeuzes tussen defensie en sociale sectoren bij geopolitieke spanningen."
+  },
+  {
+    "id": 25,
+    "thema": "Belastingen",
+    "tekst": "Hypotheekrenteaftrek afbouwen.",
+    "uitleg": "Vereenvoudiging en herverdeling in de woningmarkt versus koopkracht van huiseigenaren."
+  },
+  {
+    "id": 26,
+    "thema": "Belastingen",
+    "tekst": "Miljonairsbelasting invoeren.",
+    "uitleg": "Hogere heffing op grote vermogens voor herverdeling en publieke investeringen."
+  },
+  {
+    "id": 27,
+    "thema": "Economie & Koopkracht",
+    "tekst": "Prijsplafonds voor basisproducten & energie.",
+    "uitleg": "Prijsplafonds om koopkracht te beschermen versus markteffecten en leveringszekerheid."
+  },
+  {
+    "id": 28,
+    "thema": "Economie & Industriebeleid",
+    "tekst": "Nationale investeringsbank en meer durfkapitaal.",
+    "uitleg": "Publiek-privaat kapitaal voor innovatie en strategische autonomie."
+  },
+  {
+    "id": 29,
+    "thema": "Mobiliteit & OV",
+    "tekst": "Betalen naar gebruik voor auto’s (variabel).",
+    "uitleg": "Kilometerheffing als vervanger van vaste autobelastingen om files en uitstoot te sturen."
+  },
+  {
+    "id": 30,
+    "thema": "Digitale & Consumentenrechten",
+    "tekst": "Recht op contant betalen vastleggen.",
+    "uitleg": "Waarborg dat winkels en diensten cash blijven accepteren naast digitaal betalen."
+  }
+];
+
+
+const data = { standaard: STANDAARD, simpel: EENVOUDIG };
+
+// ====== PARTIJEN EN POSITIES ======
+// PM herijkt op 2025-08-21: placeholders 0=neutraal; vul per partij per stelling -2..2 in.
+
+// Schaal: -2..2 per stelling (zelfde volgorde voor Standaard en Eenvoudig)
+const PARTIES = ["BBB", "JA21", "SP", "ChristenUnie", "GroenLinks-PvdA"];
+const PM = {
+  "BBB": [
+    1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -2,
+    -1,
+    2,
+    -2,
+    2,
+    -1,
+    -2,
+    -2,
+    -1,
+    1,
+    1,
+    1,
+    -1,
+    2,
+    2,
+    2,
+    2,
+    1,
+    -1,
+    -2,
+    -2,
+    -2,
+    0,
+    -2,
+    2
+  ],
+  "JA21": [
+    1,
+    -1,
+    -1,
+    -2,
+    -2,
+    -2,
+    -1,
+    2,
+    -1,
+    2,
+    -1,
+    -2,
+    -2,
+    -2,
+    2,
+    2,
+    1,
+    -1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    -2,
+    -1,
+    -2,
+    -2,
+    -1,
+    -2,
+    2
+  ],
+  "SP": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    2,
+    -1,
+    1,
+    -2,
+    1,
+    2,
+    2,
+    2,
+    -2,
+    -2,
+    2,
+    2,
+    -2,
+    -2,
+    -1,
+    1,
+    -2,
+    2,
+    0,
+    2,
+    2,
+    1,
+    0,
+    0
+  ],
+  "ChristenUnie": [
+    1,
+    0,
+    1,
+    1,
+    0,
+    -1,
+    1,
+    0,
+    1,
+    -1,
+    1,
+    0,
+    0,
+    -1,
+    2,
+    2,
+    2,
+    1,
+    -1,
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    -1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "GroenLinks-PvdA": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    2,
+    -2,
+    2,
+    -1,
+    2,
+    1,
+    1,
+    1,
+    -1,
+    -2,
+    2,
+    2,
+    -2,
+    -2,
+    -2,
+    -1,
+    -1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    0
+  ]
+};
+
+let mode = 'standaard';
+let idx = 0;
+let answers = {
+  standaard: new Array(data.standaard.length).fill(null),
+  simpel: new Array(data.simpel.length).fill(null)
+};
+
+const $ = (sel) => document.querySelector(sel);
+
+function currentList(){ return mode === 'standaard' ? data.standaard : data.simpel; }
+function currentAnswers(){ return mode === 'standaard' ? answers.standaard : answers.simpel; }
+
+function setActiveToggle(){
+  $('#btn-standaard').classList.toggle('active', mode === 'standaard');
+  $('#btn-simpel').classList.toggle('active', mode === 'simpel');
+  $('#btn-standaard').setAttribute('aria-selected', mode==='standaard'?'true':'false');
+  $('#btn-simpel').setAttribute('aria-selected', mode==='simpel'?'true':'false');
+}
+
+function setStatus(){
+  $('#status').textContent = `Vraag ${idx+1} / ${currentList().length}`;
+  // 3) voortgangsbalk gelijk aan vraagpositie
+  const pct = Math.round(100 * ((idx + 1) / currentList().length));
+  $('#bar').style.width = pct + '%';
+  $('#prev').disabled = (idx === 0);
+  $('#next').disabled = false;
+}
+
+function renderQuestion(){
+  if (idx >= currentList().length) idx = currentList().length - 1;
+  if (idx < 0) idx = 0;
+
+  const s = currentList()[idx];
+    $('#qtheme').textContent = s.thema || '';
+$('#questionText').textContent = s.tekst;
+  $('#explain').style.display = 'none';
+  $('#btn-explain').setAttribute('aria-expanded','false');
+  $('#explain').textContent = s.uitleg;
+
+  const sel = currentAnswers()[idx];
+  const ctr = $('#answers');
+  ctr.innerHTML = '';
+  ANSWER_SCALE.forEach((opt) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = opt.label;
+    if (sel === opt.value) b.classList.add('selected');
+    b.addEventListener('click', () => {
+      // sla keuze op en laat selectie even zichtbaar
+      currentAnswers()[idx] = opt.value;
+      // forceer visuele selectie
+      Array.from(ctr.querySelectorAll('button')).forEach(btn => btn.classList.remove('selected'));
+      b.classList.add('selected');
+      setStatus(); // update voortgangstekst maar blijf op deze vraag
+      // 2) 0.01s wachten voor automatische doorgang
+      setTimeout(() => {
+        if (idx < currentList().length - 1){
+          idx++;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }, 1);
+    });
+    ctr.appendChild(b);
+  });
+
+  document.querySelector('#quiz').style.display = 'block';
+  document.querySelector('#results').style.display = 'none';
+
+  // show toggles while in quiz
+  const tgl = document.querySelector('.toggle');
+  if (tgl) tgl.style.display = 'inline-flex';
+
+  setStatus();
+}
+
+function nextQuestion(){
+  if (idx < currentList().length - 1){ idx++; renderQuestion(); }
+  else { showResults(); }
+}
+function prevQuestion(){ if (idx > 0){ idx--; renderQuestion(); } }
+
+function showExplain(){
+  const el = $('#explain');
+  const open = el.style.display === 'block';
+  el.style.display = open ? 'none' : 'block';
+  $('#btn-explain').setAttribute('aria-expanded', open ? 'false' : 'true');
+}
+
+// ====== Partijmatch ======
+function computePartyPercents(){
+  const ans = currentAnswers();
+  const usedIdx = ans.map((v,i)=> v===null ? null : i).filter(v=>v!==null);
+  const result = [];
+  for(const partij of Object.keys(PM)){
+    const pos = PM[partij];
+    let sum = 0;
+    let n = 0;
+    for(const i of usedIdx){
+      const diff = Math.abs(ans[i] - pos[i]);
+      const sim = 1 - (diff / 4);
+      sum += sim;
+      n += 1;
+    }
+    const pct = n ? Math.round(100 * (sum / n)) : 0;
+    result.push({ partij, pct });
+  }
+  result.sort((a,b)=> b.pct - a.pct);
+  return result;
+}
+
+function showResults(){
+  const list = computePartyPercents();
+
+  const wrap = $('#partyList');
+  wrap.innerHTML = '';
+  list.forEach((row, i) => {
+    const div = document.createElement('div');
+    div.className = 'prow';
+    div.innerHTML = `<div class="rank">${i+1}</div>
+                     <div class="party">${row.partij}</div>
+                     <div class="pct">${row.pct}%</div>`;
+    wrap.appendChild(div);
+  });
+
+  document.querySelector('#quiz').style.display = 'none';
+  document.querySelector('#results').style.display = 'block';
+
+  // hide toggles on results
+  const tgl = document.querySelector('.toggle');
+  if (tgl) tgl.style.display = 'none';
+}
+
+function backToQuiz(){
+  document.querySelector('#results').style.display = 'none';
+  document.querySelector('#quiz').style.display = 'block';
+  // show toggles again
+  const tgl = document.querySelector('.toggle');
+  if (tgl) tgl.style.display = 'inline-flex';
+  renderQuestion();
+}
+
+function restartAll(){
+  answers.standaard = new Array(data.standaard.length).fill(null);
+  answers.simpel = new Array(data.simpel.length).fill(null);
+  idx = 0;
+  renderQuestion();
+}
+
+// Event bindings
+document.querySelector('#btn-explain').addEventListener('click', showExplain);
+document.querySelector('#prev').addEventListener('click', prevQuestion);
+document.querySelector('#next').addEventListener('click', nextQuestion);
+document.querySelector('#skip').addEventListener('click', nextQuestion);
+document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
+document.querySelector('#restart').addEventListener('click', restartAll);
+
+// Mode toggle — NIET opnieuw starten; update direct
+document.querySelector('#btn-standaard').addEventListener('click', () => {
+  mode = 'standaard';
+  setActiveToggle();
+  if (idx >= currentList().length) idx = currentList().length - 1;
+  renderQuestion();
+});
+document.querySelector('#btn-simpel').addEventListener('click', () => {
+  mode = 'simpel';
+  setActiveToggle();
+  if (idx >= currentList().length) idx = currentList().length - 1;
+  renderQuestion();
+});
+
+
+function setupIntro(){
+  const intro = document.getElementById('intro');
+  const quiz = document.querySelector('#quiz');
+  const results = document.querySelector('#results');
+  const toggle = document.querySelector('.toggle');
+  const progress = document.querySelector('.progress');
+  if (!intro || !quiz) return;
+  // Show intro first
+  if (quiz) quiz.style.display = 'none';
+  if (results) results.style.display = 'none';
+  intro.style.display = 'block';
+  document.body.classList.add('intro-active');
+  if (toggle) toggle.style.display = 'none';
+  if (progress) progress.style.display = 'none';
+  const startBtn = document.getElementById('startIntro');
+  if (startBtn){
+    startBtn.addEventListener('click', () => {
+      intro.style.display = 'none';
+      document.body.classList.remove('intro-active');
+      if (quiz) quiz.style.display = 'block';
+      if (toggle) toggle.style.display = 'inline-flex';
+      if (progress) progress.style.display = 'block';
+      // Scroll to top to ensure the first vraag is visible
+      try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+    });
+  }
+}
+
+// Init
+setActiveToggle();
+renderQuestion();
+setupIntro();
+</script>
+<!-- About modal -->
+  <div id="aboutModal" class="aboutmodal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" style="display:none">
+    <div class="aboutcard">
+      <div class="abouthead">
+        <h3 id="aboutTitle" style="margin:0">Over deze kieswijzer</h3>
+        <button id="aboutClose" class="btn" type="button" aria-label="Sluiten">Sluiten</button>
+      </div>
+      <div class="aboutcontent">
+  <p><strong>Over deze kieswijzer</strong><br>
+  De <em>Eenvoudige Kieswijzer</em> is een onafhankelijke, snelle <strong>stemhulp / kieshulp</strong> voor de Tweede Kamerverkiezingen op 29 oktober 2025. In duidelijke stellingen vergelijk je jouw mening met de standpunten van politieke partijen. Resultaat: een heldere match per partij.</p>
+
+  <h4>Waarom deze kieswijzer?</h4>
+  <ul>
+    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee types (Standaard &amp; Eenvoudig).</li>
+    <li><strong>Transparant:</strong> we scoren jouw keuze (-2 t/m +2) tegenover partijposities per stelling.</li>
+    <li><strong>Privacy-vriendelijk:</strong> geen account nodig.</li>
+  </ul>
+
+  <h4>Hoe werkt de score?</h4>
+  <p>Per stelling vergelijken we jouw antwoord met de positie van elke partij. Hoe dichterbij, hoe hoger de overeenkomst in procenten. Je ziet een gesorteerde lijst met partijmatches.</p>
+
+  <h4>Bronnen</h4>
+  <p>Gebaseerd op de partijprogramma’s:</p>
+  <ul>
+    <li>BBB — programma 2025</li>
+    <li>ChristenUnie — programma 2025</li>
+    <li>GroenLinks-PvdA — programma 2025</li>
+    <li>JA21 — programma 2025</li>  
+    <li>SP — programma 2025</li>
+  </ul>
+
+  <h4>Verschil tussen Standaard en Eenvoudig?</h4>
+  <p>De Eenvoudige versie gebruikt kortere, versimpelde stellingen van dezelfde inhoud.</p>
+
+  <h4>Contact</h4>
+  <p>Feedback of suggesties? Mail: <a href="mailto:eenvoudigekieswijzer@gmail.com">eenvoudigekieswijzer@gmail.com</a>.</p>
+
+  <h4>Doneren</h4>
+  <p>Wil je dit vrijwillige project steunen? Mail: <a href="mailto:eenvoudigekieswijzer@gmail.com">eenvoudigekieswijzer@gmail.com</a>.</p>
+
+</div>
+    </div>
+  </div>
+<script>
+(function(){
+  function toggleAbout(show){
+    const m = document.getElementById('aboutModal');
+    if (!m) return;
+    const computed = (window.getComputedStyle ? getComputedStyle(m).display : m.style.display);
+    const isShown = computed && computed !== 'none';
+    const next = (show === true) ? true : (show === false ? false : !isShown);
+    m.style.display = next ? 'flex' : 'none';
+    if (next){ m.querySelector('.aboutcard')?.scrollIntoView({behavior:'smooth', block:'center'}); }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('aboutBtn');
+    if (btn) btn.addEventListener('click', () => toggleAbout());
+    const close = document.getElementById('aboutClose');
+    if (close) close.addEventListener('click', () => toggleAbout(false));
+    const modal = document.getElementById('aboutModal');
+    if (modal) modal.addEventListener('click', (e)=>{ if(e.target === modal) toggleAbout(false); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') toggleAbout(false); });
+  });
+})();
+</script>
+</body>
+
+
+
+</html>
