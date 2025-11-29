@@ -59,6 +59,7 @@
 
     .controls{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap }
     .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600 }
+    .btn:disabled{ opacity:0.6; cursor:not-allowed }
     .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
     .btn.ghost{ background:transparent }
     .explain{ display:none; padding:12px; border:1px dashed var(--line); border-radius:10px; background:#fafafa; margin-top:12px }
@@ -192,7 +193,7 @@
 </ul>
 
 <p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om te beginnen.</p>
-<button id="startIntro" class="btn primary" type="button">Start</button>
+<button id="startIntro" class="btn primary" type="button" disabled>Start (beschikbaar zodra programma's er zijn)</button>
         </div>
     </div>
   </section>
