@@ -1017,8 +1017,16 @@ function setupIntro(){
       document.body.classList.remove('intro-active');
       if (quiz) quiz.style.display = 'block';
       if (progress) progress.style.display = 'block';
-      // Scroll to top to ensure the eerste vraag is visible
-      try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+      // Mobile: scroll zodat de voortgangsbalk direct zichtbaar is
+      const isMobile = window.matchMedia && window.matchMedia('(max-width: 800px)').matches;
+      const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+      const target = progress ? (progress.getBoundingClientRect().top + window.scrollY - headerHeight - 8) : 0;
+      const scrollToTop = Math.max(target, 0);
+      if (isMobile && progress){
+        try{ window.scrollTo({top: scrollToTop, behavior:'smooth'}); }catch(e){ window.scrollTo(0,scrollToTop); }
+      } else {
+        try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+      }
     });
   }
 }
