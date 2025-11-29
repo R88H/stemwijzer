@@ -38,13 +38,9 @@
     .bar{ height:100%; width:0; background:var(--accent) }
     .qhead{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 4px }
     .qmeta{ display:flex; align-items:center; gap:8px }
+    .qtheme{ margin:4px 0 8px }
     .theme{ display:inline-block; font-size:12px; font-weight:700;
       color: var(--accent); background: var(--accent-soft);
-      border:1px solid var(--line); border-radius:999px; padding:4px 10px; }
-    
-    .qtheme{ margin:4px 0 8px }
-    .theme{ display:inline-block; font-size:12px; font-weight:700; 
-      color: var(--accent); background: var(--accent-soft); 
       border:1px solid var(--line); border-radius:999px; padding:4px 10px; }
 
     .qtext{ font-size:22px; font-weight:700 }
@@ -78,9 +74,6 @@
     @media (max-width:640px){
       .answers{ grid-template-columns: 1fr; }
     }
-    /* Hide the subtitle line on results entirely */
-    #resultSubtitle{ display:none !important; }
-  
     /* Light neutral bottom bar + About modal */
     .footerbar{ position:fixed; left:0; right:0; bottom:0; background:#f8fafc; border-top:1px solid var(--line); z-index:30; }
     .aboutmodal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); z-index:40; padding:16px; }
@@ -858,6 +851,10 @@ function showExplain(){
   $('#btn-explain').setAttribute('aria-expanded', open ? 'false' : 'true');
 }
 
+function answeredCount(){
+  return currentAnswers().filter((v) => v !== null).length;
+}
+
 // ====== Partijmatch ======
 function computePartyPercents(){
   const ans = currentAnswers();
@@ -881,18 +878,34 @@ function computePartyPercents(){
 }
 
 function showResults(){
-  const list = computePartyPercents();
+  const answered = answeredCount();
+  const total = currentList().length;
+  const subtitle = $('#resultSubtitle');
+  if (subtitle){
+    subtitle.style.display = 'block';
+    subtitle.textContent = answered === 0
+      ? 'Beantwoord eerst minimaal één stelling voor een betrouwbare match.'
+      : `Gebaseerd op ${answered} van ${total} stellingen${answered === total ? '' : '. Onbeantwoorde vragen tellen niet mee.'}`;
+  }
 
+  const list = answered === 0 ? [] : computePartyPercents();
   const wrap = $('#partyList');
   wrap.innerHTML = '';
-  list.forEach((row, i) => {
-    const div = document.createElement('div');
-    div.className = 'prow';
-    div.innerHTML = `<div class="rank">${i+1}</div>
-                     <div class="party">${row.partij}</div>
-                     <div class="pct">${row.pct}%</div>`;
-    wrap.appendChild(div);
-  });
+  if (answered === 0){
+    const msg = document.createElement('p');
+    msg.className = 'muted';
+    msg.textContent = 'Er zijn nog geen antwoorden gegeven. Ga terug naar de vragen en kies minimaal één antwoord.';
+    wrap.appendChild(msg);
+  } else {
+    list.forEach((row, i) => {
+      const div = document.createElement('div');
+      div.className = 'prow';
+      div.innerHTML = `<div class="rank">${i+1}</div>
+                       <div class="party">${row.partij}</div>
+                       <div class="pct">${row.pct}%</div>`;
+      wrap.appendChild(div);
+    });
+  }
 
   document.querySelector('#quiz').style.display = 'none';
   document.querySelector('#results').style.display = 'block';
