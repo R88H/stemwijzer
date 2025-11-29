@@ -88,7 +88,10 @@
 
     .municipality-select{ display:flex; flex-direction:column; gap:6px; margin:12px 0 18px; }
     .municipality-select label{ font-weight:700; }
-    .municipality-select select{ padding:10px; border:1px solid var(--line); border-radius:10px; font-weight:600; }
+    .municipality-buttons{ display:flex; flex-wrap:wrap; gap:8px; }
+    .municipality-buttons button{ border:1px solid var(--line); background:#fff; padding:10px 12px; border-radius:10px; font-weight:700; cursor:pointer; transition: background-color .15s ease, border-color .15s ease; }
+    .municipality-buttons button:hover{ background:var(--accent-soft); border-color:var(--accent); }
+    .municipality-buttons button.selected{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
 
     .municipality-banner{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
     .municipality-pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; font-weight:700; }
@@ -178,9 +181,8 @@
 </p>
 
 <div class="municipality-select">
-  <label for="municipalitySelect">Kies je gemeente</label>
-  <select id="municipalitySelect" name="municipality">
-  </select>
+  <label for="municipalityButtons">Kies je gemeente</label>
+  <div id="municipalityButtons" class="municipality-buttons" role="group" aria-label="Gemeenten"></div>
 </div>
 
 <ul class="muted" style="text-align:left; display:inline-block; margin:0 0 16px 0;">
@@ -685,6 +687,15 @@ let answersByMunicipality = {};
 
 const $ = (sel) => document.querySelector(sel);
 
+function highlightMunicipalityButtons(container){
+  if (!container) return;
+  Array.from(container.querySelectorAll('button')).forEach((btn) => {
+    const isActive = btn.dataset.id === selectedMunicipality;
+    btn.classList.toggle('selected', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
+
 function municipalityName(id){
   return MUNICIPALITIES.find((m) => m.id === id)?.naam || 'Onbekend';
 }
@@ -706,6 +717,7 @@ function setMunicipality(id, opts = {}){
   if (pill) pill.textContent = label;
   const resultLabel = $('#resultMunicipality');
   if (resultLabel) resultLabel.textContent = label;
+  highlightMunicipalityButtons(document.getElementById('municipalityButtons'));
   if (!opts.noRender) renderQuestion();
 }
 
@@ -865,12 +877,21 @@ function setupIntro(){
   const results = document.querySelector('#results');
   const progress = document.querySelector('.progress');
   if (!intro || !quiz) return;
-  const select = document.getElementById('municipalitySelect');
-  if (select){
-    select.innerHTML = MUNICIPALITIES.map((m) => `<option value="${m.id}">${m.naam}</option>`).join('');
-    select.value = selectedMunicipality || MUNICIPALITIES[0]?.id || '';
-    setMunicipality(select.value, { noRender: true });
-    select.addEventListener('change', (e) => setMunicipality(e.target.value));
+  const buttonWrap = document.getElementById('municipalityButtons');
+  if (buttonWrap){
+    buttonWrap.innerHTML = '';
+    const initial = selectedMunicipality || MUNICIPALITIES[0]?.id || '';
+    MUNICIPALITIES.forEach((m) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn';
+      btn.dataset.id = m.id;
+      btn.textContent = m.naam;
+      btn.addEventListener('click', () => setMunicipality(m.id));
+      buttonWrap.appendChild(btn);
+    });
+    setMunicipality(initial, { noRender: true });
+    highlightMunicipalityButtons(buttonWrap);
   } else {
     setMunicipality(selectedMunicipality, { noRender: true });
   }
@@ -883,7 +904,7 @@ function setupIntro(){
   const startBtn = document.getElementById('startIntro');
   if (startBtn){
     startBtn.addEventListener('click', () => {
-      if (select) setMunicipality(select.value);
+      setMunicipality(selectedMunicipality);
       intro.style.display = 'none';
       document.body.classList.remove('intro-active');
       if (quiz) quiz.style.display = 'block';
