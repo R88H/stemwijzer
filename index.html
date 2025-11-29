@@ -71,7 +71,6 @@
     .progress{ height:6px; background:var(--surface); border-radius:999px; overflow:hidden; margin:4px 0 18px }
     .bar{ height:100%; width:0; background:linear-gradient(90deg, #11a0ff 0%, #0f5ca7 90%); }
     .qhead{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0 10px }
-    .status-chip{ background:#0f5ca7; color:#fff; padding:7px 14px; border-radius:999px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:8px; letter-spacing:0.2px; }
     .qmeta{ display:flex; align-items:center; gap:10px }
     .qtheme{ margin:0 0 4px }
     .theme{ display:inline-block; font-size:12px; font-weight:800;
@@ -81,10 +80,14 @@
       border-radius:999px;
       padding:6px 12px; letter-spacing:0.15px; text-transform:uppercase; }
 
-    .pager{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px; align-items:center; }
-    .pager button{ border:1px solid var(--line); background:#f7f9fd; color:var(--muted); width:40px; height:40px; border-radius:8px; cursor:pointer; font-weight:700; transition:all .15s ease; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8); }
-    .pager button.active{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 10px 22px rgba(15,92,167,0.25); }
-    .pager button.answered:not(.active){ border-color:rgba(15,92,167,0.35); color:var(--accent-strong); background:#fff; }
+    .pager{ display:flex; align-items:center; gap:12px; margin:6px 0 18px; justify-content:center; flex-wrap:nowrap; }
+    .pager-wrap{ display:flex; align-items:center; gap:10px; overflow-x:auto; padding:6px 0; }
+    .pager button{ cursor:pointer; font-weight:700; transition:all .15s ease; }
+    .pager .pager-arrow{ border:1px solid var(--line); background:#fff; color:var(--muted); width:34px; height:34px; border-radius:50%; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+    .pager .pager-arrow:disabled{ opacity:0.55; cursor:not-allowed; }
+    .pager .pager-dot{ border:1px solid var(--line); background:#fff; color:var(--muted); min-width:32px; height:32px; border-radius:50%; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9); }
+    .pager .pager-dot.active{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 10px 22px rgba(15,92,167,0.25); }
+    .pager .pager-dot.answered:not(.active){ border-color:rgba(15,92,167,0.4); color:var(--accent-strong); background:#fff; }
 
     .qtext{ font-size:28px; font-weight:800; line-height:1.32; color:#0e2c57; text-align:center; margin:8px 0 18px; }
     .answers{ display:flex; flex-wrap:wrap; gap:12px; margin-top:18px; justify-content:center; }
@@ -125,6 +128,17 @@
     .btn:disabled{ opacity:0.6; cursor:not-allowed }
     .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
     .btn.ghost{ background:transparent; color:var(--accent); border-color:rgba(12,27,42,0.1); }
+    header #aboutBtn{
+      background:rgba(255,255,255,0.16);
+      color:#fff;
+      border-color:rgba(255,255,255,0.38);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,0.45);
+    }
+    header #aboutBtn:hover{
+      background:rgba(255,255,255,0.24);
+      color:#fff;
+      border-color:rgba(255,255,255,0.5);
+    }
     .explain{ display:none; padding:12px; border:1px dashed var(--line); border-radius:10px; background:#fafafa; margin-top:12px }
     /* Result list */
     .plist{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
@@ -276,7 +290,6 @@
       <div id="quiz">
         <div class="qhead">
           <div class="qmeta">
-            <div class="status-chip"><span id="status" class="status">Vraag 1 / 30</span></div>
             <span id="qtheme" class="theme"></span>
           </div>
           <button id="btn-explain" class="btn ghost" aria-expanded="false">Uitleg</button>
@@ -286,12 +299,6 @@
         <div id="explain" class="explain" aria-live="polite"></div>
 
         <div class="answers" id="answers"></div>
-
-        <div class="controls">
-          <button id="prev" class="btn">Vorige</button>
-          <button id="next" class="btn">Volgende</button>
-          <button id="skip" class="btn">Overslaan</button>
-        </div>
       </div>
 
       <div id="results">
@@ -794,23 +801,52 @@ function renderPager(){
   const pager = document.getElementById('pager');
   if (!pager) return;
   pager.innerHTML = '';
+  const total = currentList().length;
+
+  const createArrow = (dir) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pager-arrow';
+    btn.textContent = dir === 'prev' ? '‹' : '›';
+    btn.disabled = dir === 'prev' ? idx === 0 : idx >= total - 1;
+    btn.addEventListener('click', () => {
+      if (dir === 'prev' && idx > 0){
+        idx -= 1;
+        renderQuestion();
+      } else if (dir === 'next'){
+        if (idx < total - 1){
+          idx += 1;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }
+    });
+    return btn;
+  };
+
+  const wrap = document.createElement('div');
+  wrap.className = 'pager-wrap';
+  wrap.setAttribute('role', 'group');
+  wrap.setAttribute('aria-label', 'Vragen');
+
   currentList().forEach((_, i) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = i + 1;
+    b.className = 'pager-dot';
     if (currentAnswers()[i] !== null) b.classList.add('answered');
     if (i === idx) b.classList.add('active');
     b.addEventListener('click', () => {
       idx = i;
       renderQuestion();
     });
-    pager.appendChild(b);
+    wrap.appendChild(b);
   });
-  try {
-    if (idx > 4) pager.scrollTo({ left: Math.max(0, (idx - 4) * 44), behavior: 'smooth' });
-  } catch (e) {
-    /* no-op */
-  }
+
+  pager.appendChild(createArrow('prev'));
+  pager.appendChild(wrap);
+  pager.appendChild(createArrow('next'));
 }
 
 function setMunicipality(id, opts = {}){
@@ -827,12 +863,9 @@ function setMunicipality(id, opts = {}){
 }
 
 function setStatus(){
-  $('#status').textContent = `Vraag ${idx+1} / ${currentList().length}`;
   // 3) voortgangsbalk gelijk aan vraagpositie
   const pct = Math.round(100 * ((idx + 1) / currentList().length));
   $('#bar').style.width = pct + '%';
-  $('#prev').disabled = (idx === 0);
-  $('#next').disabled = false;
 }
 
 function renderQuestion(){
@@ -862,7 +895,7 @@ function renderQuestion(){
       // forceer visuele selectie
       Array.from(ctr.querySelectorAll('button')).forEach(btn => btn.classList.remove('selected'));
       b.classList.add('selected');
-      setStatus(); // update voortgangstekst maar blijf op deze vraag
+      setStatus(); // update voortgangsbalk maar blijf op deze vraag
       // 2) 0.01s wachten voor automatische doorgang
       setTimeout(() => {
         if (idx < currentList().length - 1){
@@ -882,12 +915,6 @@ function renderQuestion(){
   renderPager();
   setStatus();
 }
-
-function nextQuestion(){
-  if (idx < currentList().length - 1){ idx++; renderQuestion(); }
-  else { showResults(); }
-}
-function prevQuestion(){ if (idx > 0){ idx--; renderQuestion(); } }
 
 function showExplain(){
   const el = $('#explain');
@@ -973,9 +1000,6 @@ function restartAll(){
 
 // Event bindings
 document.querySelector('#btn-explain').addEventListener('click', showExplain);
-document.querySelector('#prev').addEventListener('click', prevQuestion);
-document.querySelector('#next').addEventListener('click', nextQuestion);
-document.querySelector('#skip').addEventListener('click', nextQuestion);
 document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
 document.querySelector('#restart').addEventListener('click', restartAll);
 
