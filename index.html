@@ -116,6 +116,9 @@
     .answers button.ans-skip{ background:var(--skip); color:var(--muted); border:1px dashed var(--line); box-shadow:none; }
     .answers button.ans-skip::before{ border-color:rgba(92,111,133,0.45); background:rgba(92,111,133,0.12); }
 
+    .nav-controls{ display:flex; gap:10px; margin-top:8px; justify-content:center; flex-wrap:wrap; }
+    .nav-controls .btn{ min-width:128px; }
+
     .controls{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; justify-content:flex-end }
     .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:800; letter-spacing:0.1px; }
     .btn:disabled{ opacity:0.6; cursor:not-allowed }
@@ -327,6 +330,10 @@
         <div id="explain" class="explain" aria-live="polite"></div>
 
         <div class="answers" id="answers"></div>
+        <div class="nav-controls">
+          <button id="prevQuestion" class="btn ghost" type="button">Vorige</button>
+          <button id="nextQuestion" class="btn primary" type="button">Volgende</button>
+        </div>
       </div>
 
       <div id="results">
@@ -890,6 +897,30 @@ function renderQuestion(){
   document.querySelector('#results').style.display = 'none';
 
   setStatus();
+
+  const prevBtn = $('#prevQuestion');
+  if (prevBtn){
+    prevBtn.disabled = idx === 0;
+  }
+  const nextBtn = $('#nextQuestion');
+  if (nextBtn){
+    nextBtn.disabled = false;
+  }
+}
+
+function goToPreviousQuestion(){
+  if (idx <= 0) return;
+  idx -= 1;
+  renderQuestion();
+}
+
+function goToNextQuestion(){
+  if (idx < currentList().length - 1){
+    idx += 1;
+    renderQuestion();
+  } else {
+    showResults();
+  }
 }
 
 function showExplain(){
@@ -978,6 +1009,10 @@ function restartAll(){
 document.querySelector('#btn-explain').addEventListener('click', showExplain);
 document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
 document.querySelector('#restart').addEventListener('click', restartAll);
+const prevBtn = document.querySelector('#prevQuestion');
+if (prevBtn) prevBtn.addEventListener('click', goToPreviousQuestion);
+const nextBtn = document.querySelector('#nextQuestion');
+if (nextBtn) nextBtn.addEventListener('click', goToNextQuestion);
 
 function setupIntro(){
   const intro = document.getElementById('intro');
@@ -1017,8 +1052,16 @@ function setupIntro(){
       document.body.classList.remove('intro-active');
       if (quiz) quiz.style.display = 'block';
       if (progress) progress.style.display = 'block';
-      // Scroll to top to ensure the eerste vraag is visible
-      try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+      // Mobile: scroll zodat de voortgangsbalk direct zichtbaar is
+      const isMobile = window.matchMedia && window.matchMedia('(max-width: 800px)').matches;
+      const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+      const target = progress ? (progress.getBoundingClientRect().top + window.scrollY - headerHeight - 8) : 0;
+      const scrollToTop = Math.max(target, 0);
+      if (isMobile && progress){
+        try{ window.scrollTo({top: scrollToTop, behavior:'smooth'}); }catch(e){ window.scrollTo(0,scrollToTop); }
+      } else {
+        try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+      }
     });
   }
 }
