@@ -287,7 +287,7 @@
       <div id="quiz">
         <div class="qhead">
           <div class="qmeta">
-            <div class="status-chip"><span id="status" class="status">Vraag 1 / 30</span></div>
+            <div class="status-chip"><span id="status" class="status">Vraag 1/30</span></div>
             <span id="qtheme" class="theme"></span>
           </div>
           <button id="btn-explain" class="btn ghost" aria-expanded="false">Uitleg</button>
@@ -297,12 +297,6 @@
         <div id="explain" class="explain" aria-live="polite"></div>
 
         <div class="answers" id="answers"></div>
-
-        <div class="controls">
-          <button id="prev" class="btn">Vorige</button>
-          <button id="next" class="btn">Volgende</button>
-          <button id="skip" class="btn">Overslaan</button>
-        </div>
       </div>
 
       <div id="results">
@@ -838,12 +832,10 @@ function setMunicipality(id, opts = {}){
 }
 
 function setStatus(){
-  $('#status').textContent = `Vraag ${idx+1} / ${currentList().length}`;
+  $('#status').textContent = `Vraag ${idx+1}/${currentList().length}`;
   // 3) voortgangsbalk gelijk aan vraagpositie
   const pct = Math.round(100 * ((idx + 1) / currentList().length));
   $('#bar').style.width = pct + '%';
-  $('#prev').disabled = (idx === 0);
-  $('#next').disabled = false;
 }
 
 function renderQuestion(){
@@ -893,12 +885,6 @@ function renderQuestion(){
   renderPager();
   setStatus();
 }
-
-function nextQuestion(){
-  if (idx < currentList().length - 1){ idx++; renderQuestion(); }
-  else { showResults(); }
-}
-function prevQuestion(){ if (idx > 0){ idx--; renderQuestion(); } }
 
 function showExplain(){
   const el = $('#explain');
@@ -984,9 +970,6 @@ function restartAll(){
 
 // Event bindings
 document.querySelector('#btn-explain').addEventListener('click', showExplain);
-document.querySelector('#prev').addEventListener('click', prevQuestion);
-document.querySelector('#next').addEventListener('click', nextQuestion);
-document.querySelector('#skip').addEventListener('click', nextQuestion);
 document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
 document.querySelector('#restart').addEventListener('click', restartAll);
 
