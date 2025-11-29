@@ -212,6 +212,22 @@
   margin: 0 0 6px;
 }
 
+    /* Mobile-friendly: keep vraag, status en knoppen in beeld zonder scrollen */
+    @media (max-width: 640px){
+      body{ background-attachment: scroll; }
+      main{ padding:16px 12px 64px; }
+      header .wrap{ padding:12px 14px; }
+      h1{ font-size:18px; margin:4px 0; }
+      .card{ padding:18px 14px; }
+      .status-chip{ padding:6px 12px; font-size:12px; }
+      .qhead{ margin:4px 0 6px; }
+      .qtext{ font-size:22px; margin:6px 0 14px; line-height:1.28; }
+      .answers{ gap:10px; margin-top:12px; }
+      .answers button{ min-height:56px; padding:10px 8px; font-size:13px; gap:4px; }
+      .answers button::before{ width:24px; height:24px; border-width:1.5px; }
+      #quiz{ min-height:auto; }
+    }
+
   </style>
 <script type="application/ld+json">
   {
