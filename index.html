@@ -28,9 +28,6 @@
     .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
     .grow{ flex:1 }
     h1{ font-size:20px; margin:8px 0 }
-    .toggle{ display:inline-flex; gap:6px; border:1px solid var(--line); border-radius:999px; padding:4px }
-    .toggle button{ border:0; background:transparent; padding:8px 14px; border-radius:999px; cursor:pointer; font-weight:600 }
-    .toggle button.active{ background:var(--accent-soft); color:var(--accent) }
     main{ padding:24px 16px }
     .card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px }
     .muted{ color:var(--muted) }
@@ -84,8 +81,7 @@
   
     .intro{ padding:24px 0; }
   
-    /* Intro-mode: hide quiz/progress/toggle on intro screen */
-    body.intro-active .toggle{ display:none !important; }
+    /* Intro-mode: hide quiz/progress on intro screen */
     body.intro-active .progress{ display:none !important; }
     body.intro-active main .card{ display:none !important; }
     body.intro-active #intro{ display:block !important; }
@@ -143,15 +139,10 @@
         "name":"Is de kieswijzer onafhankelijk?",
         "acceptedAnswer":{"@type":"Answer","text":"Ja. De tool is onafhankelijk en gebaseerd op partijprogramma’s en openbare standpunten."}
       },
-      {
+      { 
         "@type":"Question",
         "name":"Hoe zit het met privacy?",
         "acceptedAnswer":{"@type":"Answer","text":"Alles draait lokaal in je browser. Er wordt niets opgeslagen of doorgestuurd."}
-      },
-      {
-        "@type":"Question",
-        "name":"Wat is het verschil tussen Standaard en Eenvoudig?",
-        "acceptedAnswer":{"@type":"Answer","text":"De Eenvoudige modus gebruikt versimpelde formuleringen van dezelfde stellingen voor sneller invullen."}
       }
     ]
   }
@@ -163,10 +154,6 @@
     <div class="wrap row">
       <h1 class="grow">Eenvoudige Kieswijzer</h1>
       <button id="aboutBtn" class="btn ghost" type="button">Over</button>
-      <div class="toggle" role="tablist" aria-label="Vraagmodus">
-        <button id="btn-standaard" class="active" role="tab" aria-selected="true">Standaard vragen</button>
-        <button id="btn-simpel" role="tab" aria-selected="false">Eenvoudige vragen</button>
-      </div>
     </div>
   </header>
 
@@ -186,7 +173,7 @@
 </p>
 
 <ul class="muted" style="text-align:left; display:inline-block; margin:0 0 16px 0;">
-  <li>30 stellingen – Standaard &amp; Eenvoudig</li>
+  <li>30 stellingen – Standaard</li>
   <li>Heldere match per partij in procenten</li>
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
@@ -337,101 +324,7 @@ const STANDAARD = [
     uitleg: "Keuzevrijheid en toegankelijkheid versus kosten en veiligheid voor ondernemers." }
 ];
 
-// 30 EENVOUDIGE-stellingen
-const EENVOUDIG = [
-  { id: 1, thema: "Wonen", 
-    tekst: "Jaarlijks 100.000 huizen; 2/3 betaalbaar.",
-    uitleg: "Vast bouwtempo en betaalbaar aandeel versus uitvoerbaarheid, kosten en marktwerking." },
-  { id: 6, thema: "Wonen", 
-    tekst: "Grondwinst bij wijziging terug naar samenleving.",
-    uitleg: "Publieke afroming van grondwinsten versus belonen van investering en initiatief." },
-  { id: 3, thema: "Wonen", 
-    tekst: "Sterke huurdersrechten; vaste contracten.",
-    uitleg: "Meer regulering en zekerheid versus flexibiliteit en investeringsbereidheid." },
-  { id: 4, thema: "Wonen", 
-    tekst: "Nationaal Woonfonds voor betaalbare huur.",
-    uitleg: "Publieke/non-profit bouwschaal versus rol van markt en staatsrisico." },
-  { id: 5, thema: "Wonen", 
-    tekst: "Huren tijdelijk bevriezen.",
-    uitleg: "Koopkrachtbescherming nu versus achterstallig onderhoud en investeringen later." },
-  { id: 2, thema: "Wonen", 
-    tekst: "Voorrang sociale huur voor statushouders.",
-    uitleg: "Snellere integratie kwetsbare groep versus gevoel van eerlijkheid voor andere wachtenden." },
-  { id: 7, thema: "Klimaat & Energie", 
-    tekst: "Fossiele subsidies afbouwen; vervuiler betaalt.",
-    uitleg: "Sturen via prijsprikkels versus concurrentiepositie en lasten op bedrijven." },
-  { id: 8, thema: "Klimaat & Energie", 
-    tekst: "Klimaatdoelen bijstellen als onhaalbaar.",
-    uitleg: "Realistische uitvoering en kostenbeheersing versus voorspelbaarheid en ambitie." },
-  { id: 9, thema: "Klimaat & Energie", 
-    tekst: "Klimaatneutraal in 2040; 65% in 2030.",
-    uitleg: "Hoge ambitie versnelt transitie versus haalbaarheid en betaalbaarheid." },
-  { id: 10, thema: "Gezondheid & Leefstijl", 
-    tekst: "Geen suikertaks of vleesbelasting.",
-    uitleg: "Keuzevrijheid en koopkracht versus sturing naar gezonder en duurzamer gedrag." },
-  { id: 11, thema: "Klimaat & Energie", 
-    tekst: "Meer wind op zee, met natuurtoets.",
-    uitleg: "Meer hernieuwbare energie versus natuurimpact en ruimtegebruik." },
-  { id: 12, thema: "Mobiliteit & OV", 
-    tekst: "Landelijk ov-klimaatticket (daluren, laag tarief).",
-    uitleg: "OV stimuleren en files verminderen versus kosten en inkomstenderving." },
-  { id: 13, thema: "Mobiliteit & OV", 
-    tekst: "OV stapsgewijs gratis.",
-    uitleg: "OV als basisvoorziening versus structurele financiering en capaciteit." },
-  { id: 14, thema: "Zorg", 
-    tekst: "Eigen risico weg; Nationaal ZorgFonds.",
-    uitleg: "Meer solidariteit en eenvoud versus kostenbeheersing en keuzevrijheid." },
-  { id: 15, thema: "Zorg & Ethiek", 
-    tekst: "Tijdelijk stop: euthanasie <30 bij psychisch lijden.",
-    uitleg: "Extra bescherming en zorgaanbod eerst versus autonomie en maatwerk." },
-  { id: 16, thema: "Zorg & Ethiek", 
-    tekst: "Beraadtermijn terug; grens bij levensvatbaarheid.",
-    uitleg: "Meer zorgvuldigheid en medische grens versus keuzevrijheid en toegankelijkheid." },
-  { id: 17, thema: "Gezondheid & Leefstijl", 
-    tekst: "Preventie in pakket; 0% btw groente/fruit.",
-    uitleg: "Gezonde keuze goedkoper en eerder behandelen versus dekking en budgetdruk." },
-  { id: 18, thema: "Milieu & Gezondheid", 
-    tekst: "Recht op gezonde leefomgeving; strengere normen.",
-    uitleg: "Hardere kwaliteitsnormen en handhaving versus uitvoerbaarheid en kosten." },
-  { id: 19, thema: "Migratie & Asiel", 
-    tekst: "Toewerken naar asielstop.",
-    uitleg: "Instroom fors beperken versus verdragen, mensenrechten en opvangplicht." },
-  { id: 20, thema: "Migratie & Asiel", 
-    tekst: "Strikt ‘eerste veilige land’; tweestatusstelsel.",
-    uitleg: "Strakkere selectie en regionale opvang versus rechtszekerheid en integratie." },
-  { id: 21, thema: "Migratie & Asiel", 
-    tekst: "Migratieverdragen herzien; meer nationale regie.",
-    uitleg: "Eigen regels kunnen aanscherpen versus diplomatie en internationale samenwerking." },
-  { id: 22, thema: "Democratie & Bestuur", 
-    tekst: "Correctief bindend referendum invoeren.",
-    uitleg: "Meer directe zeggenschap burgers versus bestuurbaarheid en minderheidsrechten." },
-  { id: 23, thema: "Defensie & Buitenland", 
-    tekst: "Defensie naar 3,5% bbp.",
-    uitleg: "Meer veiligheid en NAVO-afspraken overtreffen versus verdringing andere uitgaven." },
-  { id: 24, thema: "Defensie & Buitenland", 
-    tekst: "Geen extra militarisering ten koste van zorg/onderwijs.",
-    uitleg: "Prioriteit sociale sectoren versus geopolitieke dreiging en paraatheid." },
-  { id: 25, thema: "Belastingen", 
-    tekst: "Hypotheekrenteaftrek afbouwen.",
-    uitleg: "Eenvoud en rechtvaardigheid woningmarkt versus lasten voor huiseigenaren." },
-  { id: 26, thema: "Belastingen", 
-    tekst: "Miljonairsbelasting invoeren.",
-    uitleg: "Herverdelen en publieke investeringen versus kapitaalvlucht en ondernemingsklimaat." },
-  { id: 27, thema: "Economie & Koopkracht", 
-    tekst: "Prijsplafonds voor basisproducten en energie.",
-    uitleg: "Bescherming koopkracht versus tekorten en marktverstoring." },
-  { id: 28, thema: "Economie & Industriebeleid", 
-    tekst: "Nationale investeringsbank voor strategie en groei.",
-    uitleg: "Langetermijninvesteringen en autonomie versus risico’s en politieke sturing." },
-  { id: 29, thema: "Mobiliteit & OV", 
-    tekst: "Betalen naar gebruik (tijd en regio).",
-    uitleg: "Eerlijke gebruiker betaalt en minder files versus privacy en lasten." },
-  { id: 30, thema: "Digitale & Consumentenrechten", 
-    tekst: "Recht op contant betalen vastleggen.",
-    uitleg: "Keuzevrijheid en toegankelijkheid versus kosten en veiligheid voor ondernemers." }
-];
-
-const data = { standaard: STANDAARD, simpel: EENVOUDIG };
+const data = { standaard: STANDAARD };
 
 // ====== PARTIJEN EN POSITIES ======
 // PM herijkt op 2025-08-21: placeholders 0=neutraal; vul per partij per stelling -2..2 in.
@@ -761,24 +654,13 @@ const PM = {
   ]
 };
 
-let mode = 'standaard';
 let idx = 0;
-let answers = {
-  standaard: new Array(data.standaard.length).fill(null),
-  simpel: new Array(data.simpel.length).fill(null)
-};
+let answers = new Array(data.standaard.length).fill(null);
 
 const $ = (sel) => document.querySelector(sel);
 
-function currentList(){ return mode === 'standaard' ? data.standaard : data.simpel; }
-function currentAnswers(){ return mode === 'standaard' ? answers.standaard : answers.simpel; }
-
-function setActiveToggle(){
-  $('#btn-standaard').classList.toggle('active', mode === 'standaard');
-  $('#btn-simpel').classList.toggle('active', mode === 'simpel');
-  $('#btn-standaard').setAttribute('aria-selected', mode==='standaard'?'true':'false');
-  $('#btn-simpel').setAttribute('aria-selected', mode==='simpel'?'true':'false');
-}
+function currentList(){ return data.standaard; }
+function currentAnswers(){ return answers; }
 
 function setStatus(){
   $('#status').textContent = `Vraag ${idx+1} / ${currentList().length}`;
@@ -830,10 +712,6 @@ function renderQuestion(){
 
   document.querySelector('#quiz').style.display = 'block';
   document.querySelector('#results').style.display = 'none';
-
-  // show toggles while in quiz
-  const tgl = document.querySelector('.toggle');
-  if (tgl) tgl.style.display = 'inline-flex';
 
   setStatus();
 }
@@ -910,23 +788,16 @@ function showResults(){
   document.querySelector('#quiz').style.display = 'none';
   document.querySelector('#results').style.display = 'block';
 
-  // hide toggles on results
-  const tgl = document.querySelector('.toggle');
-  if (tgl) tgl.style.display = 'none';
 }
 
 function backToQuiz(){
   document.querySelector('#results').style.display = 'none';
   document.querySelector('#quiz').style.display = 'block';
-  // show toggles again
-  const tgl = document.querySelector('.toggle');
-  if (tgl) tgl.style.display = 'inline-flex';
   renderQuestion();
 }
 
 function restartAll(){
-  answers.standaard = new Array(data.standaard.length).fill(null);
-  answers.simpel = new Array(data.simpel.length).fill(null);
+  answers = new Array(data.standaard.length).fill(null);
   idx = 0;
   renderQuestion();
 }
@@ -939,25 +810,10 @@ document.querySelector('#skip').addEventListener('click', nextQuestion);
 document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
 document.querySelector('#restart').addEventListener('click', restartAll);
 
-// Mode toggle — NIET opnieuw starten; update direct
-document.querySelector('#btn-standaard').addEventListener('click', () => {
-  mode = 'standaard';
-  setActiveToggle();
-  if (idx >= currentList().length) idx = currentList().length - 1;
-  renderQuestion();
-});
-document.querySelector('#btn-simpel').addEventListener('click', () => {
-  mode = 'simpel';
-  setActiveToggle();
-  if (idx >= currentList().length) idx = currentList().length - 1;
-  renderQuestion();
-});
-
 function setupIntro(){
   const intro = document.getElementById('intro');
   const quiz = document.querySelector('#quiz');
   const results = document.querySelector('#results');
-  const toggle = document.querySelector('.toggle');
   const progress = document.querySelector('.progress');
   if (!intro || !quiz) return;
   // Show intro first
@@ -965,7 +821,6 @@ function setupIntro(){
   if (results) results.style.display = 'none';
   intro.style.display = 'block';
   document.body.classList.add('intro-active');
-  if (toggle) toggle.style.display = 'none';
   if (progress) progress.style.display = 'none';
   const startBtn = document.getElementById('startIntro');
   if (startBtn){
@@ -973,7 +828,6 @@ function setupIntro(){
       intro.style.display = 'none';
       document.body.classList.remove('intro-active');
       if (quiz) quiz.style.display = 'block';
-      if (toggle) toggle.style.display = 'inline-flex';
       if (progress) progress.style.display = 'block';
       // Scroll to top to ensure the eerste vraag is visible
       try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
@@ -982,7 +836,6 @@ function setupIntro(){
 }
 
 // Init
-setActiveToggle();
 renderQuestion();
 setupIntro();
 </script>
@@ -999,7 +852,7 @@ setupIntro();
 
   <h4>Waarom deze kieswijzer?</h4>
   <ul>
-    <li><strong>Eenvoudig & snel:</strong> korte stellingen, twee types (Standaard &amp; Eenvoudig).</li>
+    <li><strong>Eenvoudig & snel:</strong> 30 heldere stellingen in de standaardformulering.</li>
     <li><strong>Transparant:</strong> we scoren jouw keuze (-2 t/m +2) tegenover partijposities per stelling.</li>
     <li><strong>Privacy-vriendelijk:</strong> geen account nodig.</li>
   </ul>
@@ -1021,9 +874,6 @@ setupIntro();
     <li>Volt — programma 2025</li>
     <li>VVD — programma 2025</li>
   </ul>
-
-  <h4>Verschil tussen Standaard en Eenvoudig?</h4>
-  <p>De Eenvoudige versie gebruikt kortere, versimpelde stellingen van dezelfde inhoud.</p>
 
   <h4>Contact</h4>
   <p>Feedback of suggesties? Mail: <a href="mailto:eenvoudigekieswijzer@gmail.com">eenvoudigekieswijzer@gmail.com</a>.</p>
