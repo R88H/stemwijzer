@@ -118,6 +118,16 @@
 
     .nav-controls{ display:flex; gap:10px; margin-top:8px; justify-content:center; flex-wrap:wrap; }
     .nav-controls .btn{ min-width:128px; }
+    .nav-controls .btn.primary{
+      background:#fff;
+      color:var(--accent);
+      border-color:var(--line);
+      box-shadow:0 8px 16px rgba(8,40,80,0.1);
+    }
+    .nav-controls .btn.primary:hover{
+      background:var(--accent-soft);
+      border-color:var(--accent);
+    }
 
     .controls{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; justify-content:flex-end }
     .btn{ border:1px solid var(--line); background:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:800; letter-spacing:0.1px; }
