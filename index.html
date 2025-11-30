@@ -134,6 +134,10 @@
     .btn:disabled{ opacity:0.6; cursor:not-allowed }
     .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff }
     .btn.ghost{ background:transparent; color:var(--accent); border-color:rgba(12,27,42,0.1); }
+    .share-section{ margin:18px 0; display:flex; flex-direction:column; gap:10px; }
+    .share-options{ display:none; flex-wrap:wrap; gap:8px; }
+    .share-options .btn{ background:#f8fafc; border-color:var(--line); color:var(--accent); }
+    .share-options .btn:hover{ background:var(--accent-soft); border-color:var(--accent); }
     header #aboutBtn{
       background:rgba(255,255,255,0.16);
       color:#fff;
@@ -260,6 +264,7 @@
   }
   </script>
   <link rel="canonical" href="https://www.eenvoudige-kieswijzer.nl/">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <header>
@@ -329,6 +334,16 @@
         <h2 style="margin:0 0 8px">Resultaat</h2>
         <p class="muted" id="resultSubtitle">—</p>
         <p class="muted" style="margin-top:-6px;">Gemeente: <strong id="resultMunicipality">-</strong></p>
+
+        <div class="share-section">
+          <button id="shareToggle" class="btn primary" type="button" aria-expanded="false">Resultaat delen via</button>
+          <div id="shareOptions" class="share-options" aria-label="Delen" role="group">
+            <button class="btn" type="button" data-platform="whatsapp">WhatsApp</button>
+            <button class="btn" type="button" data-platform="facebook">Facebook</button>
+            <button class="btn" type="button" data-platform="instagram">Instagram</button>
+            <button class="btn" type="button" data-platform="email">E-mail</button>
+          </div>
+        </div>
 
         <!-- Alleen partijpercentages (hoogste eerst) -->
         <div id="partyList" class="plist"></div>
@@ -842,6 +857,7 @@ const PM = {
 let idx = 0;
 let selectedMunicipality = '';
 let answersByMunicipality = {};
+let latestPartyResults = [];
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -998,6 +1014,111 @@ function computePartyPercents(){
   return result;
 }
 
+function resetShareOptions(){
+  const options = $('#shareOptions');
+  const toggle = $('#shareToggle');
+  if (options) options.style.display = 'none';
+  if (toggle) toggle.setAttribute('aria-expanded','false');
+}
+
+function buildShareMessage(){
+  const municipality = municipalityName(selectedMunicipality);
+  const topMatch = latestPartyResults?.[0];
+  const topText = topMatch ? ` Hoogste match: ${topMatch.partij} (${topMatch.pct}%).` : '';
+  return `Mijn resultaat van de Eenvoudige Kieswijzer voor ${municipality}.${topText}`;
+}
+
+function buildShareUrl(platform){
+  const baseUrl = encodeURIComponent(window.location.href.split('#')[0]);
+  const message = encodeURIComponent(buildShareMessage());
+  switch(platform){
+    case 'whatsapp':
+      return `https://api.whatsapp.com/send?text=${message}%20${baseUrl}`;
+    case 'facebook':
+      return `https://www.facebook.com/sharer/sharer.php?u=${baseUrl}`;
+    case 'instagram':
+      return `https://www.instagram.com/?url=${baseUrl}`;
+    case 'email':
+      return `mailto:?subject=${encodeURIComponent('Mijn stemwijzer-resultaat')}&body=${message}%0A%0A${baseUrl}`;
+    default:
+      return '';
+  }
+}
+
+let lastScreenshotUrl = null;
+
+async function generateResultScreenshot(){
+  const resultsEl = document.querySelector('#results');
+  if (!resultsEl || typeof html2canvas !== 'function') return null;
+
+  const canvas = await html2canvas(resultsEl, {
+    backgroundColor: '#f8fafc',
+    scale: window.devicePixelRatio > 1 ? 2 : 1.5,
+    useCORS: true,
+    windowWidth: document.documentElement.scrollWidth,
+  });
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      if (!blob){
+        resolve(null);
+        return;
+      }
+      if (lastScreenshotUrl){
+        URL.revokeObjectURL(lastScreenshotUrl);
+      }
+      lastScreenshotUrl = URL.createObjectURL(blob);
+      resolve({ blob, url: lastScreenshotUrl });
+    }, 'image/png');
+  });
+}
+
+function openImageHelper(url, message){
+  const helperWin = window.open('', '_blank');
+  if (!helperWin) return;
+  helperWin.document.write(`
+    <div style="font-family:Inter,system-ui,sans-serif; padding:12px; line-height:1.5;">
+      <p><strong>Download de afbeelding hieronder</strong> en deel deze samen met je bericht:</p>
+      <p>${message}</p>
+      <img src="${url}" alt="Resultaat" style="width:100%; max-width:980px; border:1px solid #d7e1ef; border-radius:12px;" />
+    </div>
+  `);
+}
+
+async function handleShareClick(platform){
+  const screenshot = await generateResultScreenshot();
+  const message = buildShareMessage();
+  const baseUrl = buildShareUrl(platform);
+
+  if (screenshot?.blob){
+    const file = new File([screenshot.blob], 'kieswijzer-resultaat.png', { type:'image/png' });
+    const shareData = { title: 'Mijn stemwijzer-resultaat', text: message, files: [file] };
+    if (navigator.canShare && navigator.canShare({ files: [file] })){
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err){
+        console.error('Delen via systeemmethode mislukt:', err);
+      }
+    }
+  }
+
+  if (screenshot?.url){
+    openImageHelper(screenshot.url, message);
+  }
+
+  if (baseUrl) window.open(baseUrl, '_blank', 'noopener,noreferrer');
+}
+
+function toggleShareOptions(){
+  const options = $('#shareOptions');
+  const toggle = $('#shareToggle');
+  if (!options || !toggle) return;
+  const isVisible = options.style.display === 'flex';
+  options.style.display = isVisible ? 'none' : 'flex';
+  toggle.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
+}
+
 function showResults(){
   const answered = answeredCount();
   const total = currentList().length;
@@ -1012,6 +1133,8 @@ function showResults(){
   if (resultLabel) resultLabel.textContent = municipalityName(selectedMunicipality);
 
   const list = answered === 0 ? [] : computePartyPercents();
+  latestPartyResults = list;
+  resetShareOptions();
   const wrap = $('#partyList');
   wrap.innerHTML = '';
   if (answered === 0){
@@ -1055,6 +1178,11 @@ const prevBtn = document.querySelector('#prevQuestion');
 if (prevBtn) prevBtn.addEventListener('click', goToPreviousQuestion);
 const nextBtn = document.querySelector('#nextQuestion');
 if (nextBtn) nextBtn.addEventListener('click', goToNextQuestion);
+const shareToggle = document.querySelector('#shareToggle');
+if (shareToggle) shareToggle.addEventListener('click', toggleShareOptions);
+document.querySelectorAll('#shareOptions button').forEach((btn) => {
+  btn.addEventListener('click', () => handleShareClick(btn.dataset.platform));
+});
 
 function setupIntro(){
   const intro = document.getElementById('intro');
