@@ -264,6 +264,7 @@
   }
   </script>
   <link rel="canonical" href="https://www.eenvoudige-kieswijzer.nl/">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <header>
@@ -1044,10 +1045,69 @@ function buildShareUrl(platform){
   }
 }
 
-function handleShareClick(platform){
-  const url = buildShareUrl(platform);
-  if (!url) return;
-  window.open(url, '_blank', 'noopener,noreferrer');
+let lastScreenshotUrl = null;
+
+async function generateResultScreenshot(){
+  const resultsEl = document.querySelector('#results');
+  if (!resultsEl || typeof html2canvas !== 'function') return null;
+
+  const canvas = await html2canvas(resultsEl, {
+    backgroundColor: '#f8fafc',
+    scale: window.devicePixelRatio > 1 ? 2 : 1.5,
+    useCORS: true,
+    windowWidth: document.documentElement.scrollWidth,
+  });
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => {
+      if (!blob){
+        resolve(null);
+        return;
+      }
+      if (lastScreenshotUrl){
+        URL.revokeObjectURL(lastScreenshotUrl);
+      }
+      lastScreenshotUrl = URL.createObjectURL(blob);
+      resolve({ blob, url: lastScreenshotUrl });
+    }, 'image/png');
+  });
+}
+
+function openImageHelper(url, message){
+  const helperWin = window.open('', '_blank');
+  if (!helperWin) return;
+  helperWin.document.write(`
+    <div style="font-family:Inter,system-ui,sans-serif; padding:12px; line-height:1.5;">
+      <p><strong>Download de afbeelding hieronder</strong> en deel deze samen met je bericht:</p>
+      <p>${message}</p>
+      <img src="${url}" alt="Resultaat" style="width:100%; max-width:980px; border:1px solid #d7e1ef; border-radius:12px;" />
+    </div>
+  `);
+}
+
+async function handleShareClick(platform){
+  const screenshot = await generateResultScreenshot();
+  const message = buildShareMessage();
+  const baseUrl = buildShareUrl(platform);
+
+  if (screenshot?.blob){
+    const file = new File([screenshot.blob], 'kieswijzer-resultaat.png', { type:'image/png' });
+    const shareData = { title: 'Mijn stemwijzer-resultaat', text: message, files: [file] };
+    if (navigator.canShare && navigator.canShare({ files: [file] })){
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err){
+        console.error('Delen via systeemmethode mislukt:', err);
+      }
+    }
+  }
+
+  if (screenshot?.url){
+    openImageHelper(screenshot.url, message);
+  }
+
+  if (baseUrl) window.open(baseUrl, '_blank', 'noopener,noreferrer');
 }
 
 function toggleShareOptions(){
