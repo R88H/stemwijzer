@@ -160,20 +160,7 @@
       .answers{ flex-direction:column; }
       .answers button{ width:100%; min-height:72px; }
     }
-    /* Light neutral bottom bar + About modal */
-    .footerbar{ position:fixed; left:0; right:0; bottom:0; background:#f8fafc; border-top:1px solid var(--line); z-index:30; }
-    .pager-wrap{ display:flex; align-items:center; gap:14px; padding:12px 0; }
-    .pager-meta{ min-width:140px; }
-    .pager-meta .pager-status{ font-weight:800; color:var(--accent); }
-    .pager-buttons{ display:grid; grid-template-columns: repeat(auto-fit, minmax(46px, 1fr)); gap:10px; flex:1; }
-    .pager-btn{ border:1px solid var(--line); background:#fff; padding:10px 0; border-radius:12px; font-weight:800; cursor:pointer; transition:background-color .15s ease, transform .12s ease, border-color .15s ease; }
-    .pager-btn:hover{ background:var(--accent-soft); border-color:var(--accent); }
-    .pager-btn.answered{ border-color:var(--accent); color:var(--accent); }
-    .pager-btn.current{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 6px 16px rgba(12,63,120,0.2); }
-    @media (max-width:640px){
-      .pager-wrap{ flex-direction:column; align-items:flex-start; }
-      .pager-buttons{ width:100%; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); }
-    }
+    /* About modal */
     .aboutmodal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); z-index:40; padding:16px; }
     .aboutcard{ max-width:760px; width:100%; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
     .abouthead{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
@@ -190,7 +177,6 @@
     body.intro-active .progress{ display:none !important; }
     body.intro-active main .card{ display:none !important; }
     body.intro-active #intro{ display:block !important; }
-    body.intro-active .footerbar{ display:none !important; }
 
     .municipality-select{ display:flex; flex-direction:column; gap:6px; margin:12px 0 18px; }
     .municipality-select label{ font-weight:700; }
@@ -315,21 +301,8 @@
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
 
-<div class="example-callout" aria-label="Voorbeeldvraag">
-  <p class="example-heading">Voorbeeld</p>
-  <p class="example-quote">De overheid bouwt jaarlijks 100.000 woningen; minstens twee derde betaalbaar.</p>
-  <div class="example-options" aria-hidden="true">
-    <span class="example-pill">Helemaal mee eens</span>
-    <span class="example-pill">Mee eens</span>
-    <span class="example-pill">Neutraal</span>
-    <span class="example-pill">Niet mee eens</span>
-    <span class="example-pill">Helemaal niet mee eens</span>
-    <span class="example-pill">Geen mening</span>
-  </div>
-</div>
-
-<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om direct te beginnen.</p>
-<button id="startIntro" class="btn primary" type="button" disabled>Start</button>
+<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Oké</strong> om direct te beginnen.</p>
+<button id="startIntro" class="btn primary" type="button" disabled>Oké</button>
         </div>
     </div>
   </section>
@@ -387,16 +360,6 @@
       </div>
     </div>
   </main>
-
-  <div class="footerbar" role="navigation" aria-label="Vragen navigatie">
-    <div class="wrap pager-wrap">
-      <div class="pager-meta">
-        <div class="muted" style="margin-bottom:2px">Stelling kiezen</div>
-        <div class="pager-status" id="pagerStatus">1/30</div>
-      </div>
-      <div id="pagerButtons" class="pager-buttons"></div>
-    </div>
-  </div>
 
 <script>
 // Antwoordopties (links→rechts)
@@ -912,6 +875,13 @@ function highlightMunicipalityButtons(container){
   });
 }
 
+function updateStartButtonState(){
+  const startBtn = document.getElementById('startIntro');
+  if (!startBtn) return;
+  const hasSelection = Boolean(selectedMunicipality);
+  startBtn.disabled = !hasSelection;
+}
+
 function municipalityName(id){
   return MUNICIPALITIES.find((m) => m.id === id)?.naam || 'Onbekend';
 }
@@ -943,33 +913,6 @@ function setStatus(){
   // 3) voortgangsbalk gelijk aan vraagpositie
   const pct = Math.round(100 * ((idx + 1) / currentList().length));
   $('#bar').style.width = pct + '%';
-  renderPager();
-}
-
-function renderPager(){
-  const pager = document.getElementById('pagerButtons');
-  if (!pager) return;
-  const pagerStatus = document.getElementById('pagerStatus');
-  const total = currentList().length;
-  if (pagerStatus) pagerStatus.textContent = `${idx+1}/${total}`;
-
-  pager.innerHTML = '';
-  currentList().forEach((_, i) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'pager-btn';
-    b.textContent = i + 1;
-    b.setAttribute('aria-label', `Ga naar vraag ${i + 1}`);
-    if (i === idx) b.classList.add('current');
-    if (currentAnswers()[i] !== null) b.classList.add('answered');
-    b.addEventListener('click', () => {
-      idx = i;
-      renderQuestion();
-      try { window.scrollTo({ top: document.querySelector('main')?.offsetTop || 0, behavior: 'smooth' }); }
-      catch(e){ window.scrollTo(0,0); }
-    });
-    pager.appendChild(b);
-  });
 }
 
 function renderQuestion(){
@@ -1261,7 +1204,7 @@ function setupIntro(){
       btn.className = 'btn';
       btn.dataset.id = m.id;
       btn.textContent = m.naam;
-      btn.addEventListener('click', () => setMunicipality(m.id));
+      btn.addEventListener('click', () => setMunicipality(m.id, { noRender: true }));
       buttonWrap.appendChild(btn);
     });
     highlightMunicipalityButtons(buttonWrap);
@@ -1300,7 +1243,6 @@ function setupIntro(){
 
 // Init
 setMunicipality(selectedMunicipality, { noRender: true });
-renderQuestion();
 setupIntro();
 </script>
 <!-- About modal -->
