@@ -315,21 +315,8 @@
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
 
-<div class="example-callout" aria-label="Voorbeeldvraag">
-  <p class="example-heading">Voorbeeld</p>
-  <p class="example-quote">De overheid bouwt jaarlijks 100.000 woningen; minstens twee derde betaalbaar.</p>
-  <div class="example-options" aria-hidden="true">
-    <span class="example-pill">Helemaal mee eens</span>
-    <span class="example-pill">Mee eens</span>
-    <span class="example-pill">Neutraal</span>
-    <span class="example-pill">Niet mee eens</span>
-    <span class="example-pill">Helemaal niet mee eens</span>
-    <span class="example-pill">Geen mening</span>
-  </div>
-</div>
-
-<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om direct te beginnen.</p>
-<button id="startIntro" class="btn primary" type="button" disabled>Start</button>
+<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Oké</strong> om direct te beginnen.</p>
+<button id="startIntro" class="btn primary" type="button" disabled>Oké</button>
         </div>
     </div>
   </section>
@@ -912,6 +899,13 @@ function highlightMunicipalityButtons(container){
   });
 }
 
+function updateStartButtonState(){
+  const startBtn = document.getElementById('startIntro');
+  if (!startBtn) return;
+  const hasSelection = Boolean(selectedMunicipality);
+  startBtn.disabled = !hasSelection;
+}
+
 function municipalityName(id){
   return MUNICIPALITIES.find((m) => m.id === id)?.naam || 'Onbekend';
 }
@@ -1261,7 +1255,7 @@ function setupIntro(){
       btn.className = 'btn';
       btn.dataset.id = m.id;
       btn.textContent = m.naam;
-      btn.addEventListener('click', () => setMunicipality(m.id));
+      btn.addEventListener('click', () => setMunicipality(m.id, { noRender: true }));
       buttonWrap.appendChild(btn);
     });
     highlightMunicipalityButtons(buttonWrap);
@@ -1300,7 +1294,6 @@ function setupIntro(){
 
 // Init
 setMunicipality(selectedMunicipality, { noRender: true });
-renderQuestion();
 setupIntro();
 </script>
 <!-- About modal -->
