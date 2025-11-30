@@ -185,12 +185,6 @@
     .municipality-banner{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
     .municipality-pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; font-weight:700; }
 
-    .example-callout{ margin:16px 0 18px; padding:14px 16px; border:1px dashed var(--line); border-radius:12px; background:#f7f9fc; color:var(--text); }
-    .example-heading{ margin:0 0 6px; font-weight:800; color:var(--accent); letter-spacing:0.1px; }
-    .example-quote{ margin:0 0 12px; font-weight:700; line-height:1.5; }
-    .example-options{ display:flex; flex-wrap:wrap; gap:8px; }
-    .example-pill{ background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 12px; font-weight:700; font-size:13px; color:var(--text); }
-
     /* Fix controls position: keep at bottom of quiz card */
     #quiz{ display:flex; flex-direction:column; min-height: 360px; gap:16px; }
     #quiz .answers{ flex:1; }
@@ -299,21 +293,8 @@
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
 
-<div class="example-callout" aria-label="Voorbeeldvraag">
-  <p class="example-heading">Voorbeeld</p>
-  <p class="example-quote">De overheid bouwt jaarlijks 100.000 woningen; minstens twee derde betaalbaar.</p>
-  <div class="example-options" aria-hidden="true">
-    <span class="example-pill">Helemaal mee eens</span>
-    <span class="example-pill">Mee eens</span>
-    <span class="example-pill">Neutraal</span>
-    <span class="example-pill">Niet mee eens</span>
-    <span class="example-pill">Helemaal niet mee eens</span>
-    <span class="example-pill">Geen mening</span>
-  </div>
-</div>
-
 <p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om direct te beginnen.</p>
-<button id="startIntro" class="btn primary" type="button">Start</button>
+<button id="startIntro" class="btn primary" type="button" disabled>Start</button>
         </div>
     </div>
   </section>
@@ -816,7 +797,7 @@ const PM = {
 };
 
 let idx = 0;
-let selectedMunicipality = MUNICIPALITIES[0]?.id || '';
+let selectedMunicipality = '';
 let answersByMunicipality = {};
 
 const $ = (sel) => document.querySelector(sel);
@@ -842,6 +823,13 @@ function currentAnswers(){
   return answersByMunicipality[selectedMunicipality];
 }
 
+function updateStartButtonState(){
+  const start = document.getElementById('startIntro');
+  if (start){
+    start.disabled = !selectedMunicipality;
+  }
+}
+
 function setMunicipality(id, opts = {}){
   if (!data[id]) return;
   selectedMunicipality = id;
@@ -852,6 +840,7 @@ function setMunicipality(id, opts = {}){
   const resultLabel = $('#resultMunicipality');
   if (resultLabel) resultLabel.textContent = label;
   highlightMunicipalityButtons(document.getElementById('municipalityButtons'));
+  updateStartButtonState();
   if (!opts.noRender) renderQuestion();
 }
 
@@ -1033,7 +1022,6 @@ function setupIntro(){
   const buttonWrap = document.getElementById('municipalityButtons');
   if (buttonWrap){
     buttonWrap.innerHTML = '';
-    const initial = selectedMunicipality || MUNICIPALITIES[0]?.id || '';
     MUNICIPALITIES.forEach((m) => {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -1043,11 +1031,11 @@ function setupIntro(){
       btn.addEventListener('click', () => setMunicipality(m.id));
       buttonWrap.appendChild(btn);
     });
-    setMunicipality(initial, { noRender: true });
     highlightMunicipalityButtons(buttonWrap);
   } else {
     setMunicipality(selectedMunicipality, { noRender: true });
   }
+  updateStartButtonState();
   // Show intro first
   if (quiz) quiz.style.display = 'none';
   if (results) results.style.display = 'none';
@@ -1057,6 +1045,7 @@ function setupIntro(){
   const startBtn = document.getElementById('startIntro');
   if (startBtn){
     startBtn.addEventListener('click', () => {
+      if (!selectedMunicipality) return;
       setMunicipality(selectedMunicipality);
       intro.style.display = 'none';
       document.body.classList.remove('intro-active');
