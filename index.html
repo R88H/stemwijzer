@@ -301,8 +301,7 @@
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
 
-<p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Oké</strong> om direct te beginnen.</p>
-<button id="startIntro" class="btn primary" type="button" disabled>Oké</button>
+<p class="muted" style="margin:0 0 16px">Kies een gemeente om direct te beginnen met stelling 1.</p>
         </div>
     </div>
   </section>
@@ -875,13 +874,6 @@ function highlightMunicipalityButtons(container){
   });
 }
 
-function updateStartButtonState(){
-  const startBtn = document.getElementById('startIntro');
-  if (!startBtn) return;
-  const hasSelection = Boolean(selectedMunicipality);
-  startBtn.disabled = !hasSelection;
-}
-
 function municipalityName(id){
   return MUNICIPALITIES.find((m) => m.id === id)?.naam || 'Onbekend';
 }
@@ -904,7 +896,6 @@ function setMunicipality(id, opts = {}){
   const resultLabel = $('#resultMunicipality');
   if (resultLabel) resultLabel.textContent = label;
   highlightMunicipalityButtons(document.getElementById('municipalityButtons'));
-  updateStartButtonState();
   if (!opts.noRender) renderQuestion();
 }
 
@@ -1175,6 +1166,30 @@ function restartAll(){
   renderQuestion();
 }
 
+function startQuiz(){
+  const intro = document.getElementById('intro');
+  const quiz = document.querySelector('#quiz');
+  const results = document.querySelector('#results');
+  const progress = document.querySelector('.progress');
+  if (!selectedMunicipality || !intro || !quiz) return;
+
+  intro.style.display = 'none';
+  document.body.classList.remove('intro-active');
+  quiz.style.display = 'block';
+  if (results) results.style.display = 'none';
+  if (progress) progress.style.display = 'block';
+
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 800px)').matches;
+  const headerHeight = document.querySelector('header')?.offsetHeight || 0;
+  const target = progress ? (progress.getBoundingClientRect().top + window.scrollY - headerHeight - 8) : 0;
+  const scrollToTop = Math.max(target, 0);
+  if (isMobile && progress){
+    try{ window.scrollTo({top: scrollToTop, behavior:'smooth'}); }catch(e){ window.scrollTo(0,scrollToTop); }
+  } else {
+    try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+  }
+}
+
 // Event bindings
 document.querySelector('#btn-explain').addEventListener('click', showExplain);
 document.querySelector('#backToQuiz').addEventListener('click', backToQuiz);
@@ -1204,41 +1219,22 @@ function setupIntro(){
       btn.className = 'btn';
       btn.dataset.id = m.id;
       btn.textContent = m.naam;
-      btn.addEventListener('click', () => setMunicipality(m.id, { noRender: true }));
+      btn.addEventListener('click', () => {
+        setMunicipality(m.id);
+        startQuiz();
+      });
       buttonWrap.appendChild(btn);
     });
     highlightMunicipalityButtons(buttonWrap);
   } else {
     setMunicipality(selectedMunicipality, { noRender: true });
   }
-  updateStartButtonState();
   // Show intro first
   if (quiz) quiz.style.display = 'none';
   if (results) results.style.display = 'none';
   intro.style.display = 'block';
   document.body.classList.add('intro-active');
   if (progress) progress.style.display = 'none';
-  const startBtn = document.getElementById('startIntro');
-  if (startBtn){
-    startBtn.addEventListener('click', () => {
-      if (!selectedMunicipality) return;
-      setMunicipality(selectedMunicipality);
-      intro.style.display = 'none';
-      document.body.classList.remove('intro-active');
-      if (quiz) quiz.style.display = 'block';
-      if (progress) progress.style.display = 'block';
-      // Mobile: scroll zodat de voortgangsbalk direct zichtbaar is
-      const isMobile = window.matchMedia && window.matchMedia('(max-width: 800px)').matches;
-      const headerHeight = document.querySelector('header')?.offsetHeight || 0;
-      const target = progress ? (progress.getBoundingClientRect().top + window.scrollY - headerHeight - 8) : 0;
-      const scrollToTop = Math.max(target, 0);
-      if (isMobile && progress){
-        try{ window.scrollTo({top: scrollToTop, behavior:'smooth'}); }catch(e){ window.scrollTo(0,scrollToTop); }
-      } else {
-        try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
-      }
-    });
-  }
 }
 
 // Init
