@@ -59,7 +59,7 @@
     .row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
     .grow{ flex:1 }
     h1{ font-size:20px; margin:8px 0; color:#fff; font-weight:700; letter-spacing:0.1px; }
-    main{ padding:32px 16px 64px }
+    main{ padding:32px 16px 140px }
     .card{
       background:var(--panel);
       border:1px solid var(--line);
@@ -81,15 +81,15 @@
       border-radius:999px;
       padding:6px 12px; letter-spacing:0.15px; text-transform:uppercase; }
 
-    .qtext{ font-size:28px; font-weight:800; line-height:1.34; color:#0e2c57; text-align:center; margin:14px 0 26px; }
-    .answers{ display:flex; flex-wrap:wrap; gap:16px; margin-top:24px; justify-content:center; }
+    .qtext{ font-size:28px; font-weight:800; line-height:1.34; color:#0e2c57; text-align:center; margin:14px 0 36px; }
+    .answers{ display:flex; flex-wrap:wrap; gap:16px; margin-top:0; justify-content:center; }
     .answers button{
       border:1px solid transparent;
       color:#fff;
       flex:1;
-      min-width:120px;
-      padding:12px 10px;
-      border-radius:12px;
+      min-width:150px;
+      padding:18px 14px;
+      border-radius:16px;
       cursor:pointer;
       font-weight:800;
       font-size:14px;
@@ -162,6 +162,18 @@
     }
     /* Light neutral bottom bar + About modal */
     .footerbar{ position:fixed; left:0; right:0; bottom:0; background:#f8fafc; border-top:1px solid var(--line); z-index:30; }
+    .pager-wrap{ display:flex; align-items:center; gap:14px; padding:12px 0; }
+    .pager-meta{ min-width:140px; }
+    .pager-meta .pager-status{ font-weight:800; color:var(--accent); }
+    .pager-buttons{ display:grid; grid-template-columns: repeat(auto-fit, minmax(46px, 1fr)); gap:10px; flex:1; }
+    .pager-btn{ border:1px solid var(--line); background:#fff; padding:10px 0; border-radius:12px; font-weight:800; cursor:pointer; transition:background-color .15s ease, transform .12s ease, border-color .15s ease; }
+    .pager-btn:hover{ background:var(--accent-soft); border-color:var(--accent); }
+    .pager-btn.answered{ border-color:var(--accent); color:var(--accent); }
+    .pager-btn.current{ background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 6px 16px rgba(12,63,120,0.2); }
+    @media (max-width:640px){
+      .pager-wrap{ flex-direction:column; align-items:flex-start; }
+      .pager-buttons{ width:100%; grid-template-columns: repeat(auto-fit, minmax(42px, 1fr)); }
+    }
     .aboutmodal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.35); z-index:40; padding:16px; }
     .aboutcard{ max-width:760px; width:100%; background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px; }
     .abouthead{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
@@ -178,6 +190,7 @@
     body.intro-active .progress{ display:none !important; }
     body.intro-active main .card{ display:none !important; }
     body.intro-active #intro{ display:block !important; }
+    body.intro-active .footerbar{ display:none !important; }
 
     .municipality-select{ display:flex; flex-direction:column; gap:6px; margin:12px 0 18px; }
     .municipality-select label{ font-weight:700; }
@@ -188,6 +201,12 @@
 
     .municipality-banner{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }
     .municipality-pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:#f8fafc; font-weight:700; }
+
+    .example-callout{ margin:16px 0 18px; padding:14px 16px; border:1px dashed var(--line); border-radius:12px; background:#f7f9fc; color:var(--text); }
+    .example-heading{ margin:0 0 6px; font-weight:800; color:var(--accent); letter-spacing:0.1px; }
+    .example-quote{ margin:0 0 12px; font-weight:700; line-height:1.5; }
+    .example-options{ display:flex; flex-wrap:wrap; gap:8px; }
+    .example-pill{ background:#fff; border:1px solid var(--line); border-radius:999px; padding:8px 12px; font-weight:700; font-size:13px; color:var(--text); }
 
     /* Fix controls position: keep at bottom of quiz card */
     #quiz{ display:flex; flex-direction:column; min-height: 360px; gap:16px; }
@@ -296,6 +315,19 @@
   <li>Snel, onafhankelijk en privacyvriendelijk</li>
 </ul>
 
+<div class="example-callout" aria-label="Voorbeeldvraag">
+  <p class="example-heading">Voorbeeld</p>
+  <p class="example-quote">De overheid bouwt jaarlijks 100.000 woningen; minstens twee derde betaalbaar.</p>
+  <div class="example-options" aria-hidden="true">
+    <span class="example-pill">Helemaal mee eens</span>
+    <span class="example-pill">Mee eens</span>
+    <span class="example-pill">Neutraal</span>
+    <span class="example-pill">Niet mee eens</span>
+    <span class="example-pill">Helemaal niet mee eens</span>
+    <span class="example-pill">Geen mening</span>
+  </div>
+</div>
+
 <p class="muted" style="margin:0 0 16px">Klaar? Klik op <strong>Start</strong> om direct te beginnen.</p>
 <button id="startIntro" class="btn primary" type="button" disabled>Start</button>
         </div>
@@ -355,6 +387,16 @@
       </div>
     </div>
   </main>
+
+  <div class="footerbar" role="navigation" aria-label="Vragen navigatie">
+    <div class="wrap pager-wrap">
+      <div class="pager-meta">
+        <div class="muted" style="margin-bottom:2px">Stelling kiezen</div>
+        <div class="pager-status" id="pagerStatus">1/30</div>
+      </div>
+      <div id="pagerButtons" class="pager-buttons"></div>
+    </div>
+  </div>
 
 <script>
 // Antwoordopties (links→rechts)
@@ -882,13 +924,6 @@ function currentAnswers(){
   return answersByMunicipality[selectedMunicipality];
 }
 
-function updateStartButtonState(){
-  const start = document.getElementById('startIntro');
-  if (start){
-    start.disabled = !selectedMunicipality;
-  }
-}
-
 function setMunicipality(id, opts = {}){
   if (!data[id]) return;
   selectedMunicipality = id;
@@ -908,6 +943,33 @@ function setStatus(){
   // 3) voortgangsbalk gelijk aan vraagpositie
   const pct = Math.round(100 * ((idx + 1) / currentList().length));
   $('#bar').style.width = pct + '%';
+  renderPager();
+}
+
+function renderPager(){
+  const pager = document.getElementById('pagerButtons');
+  if (!pager) return;
+  const pagerStatus = document.getElementById('pagerStatus');
+  const total = currentList().length;
+  if (pagerStatus) pagerStatus.textContent = `${idx+1}/${total}`;
+
+  pager.innerHTML = '';
+  currentList().forEach((_, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pager-btn';
+    b.textContent = i + 1;
+    b.setAttribute('aria-label', `Ga naar vraag ${i + 1}`);
+    if (i === idx) b.classList.add('current');
+    if (currentAnswers()[i] !== null) b.classList.add('answered');
+    b.addEventListener('click', () => {
+      idx = i;
+      renderQuestion();
+      try { window.scrollTo({ top: document.querySelector('main')?.offsetTop || 0, behavior: 'smooth' }); }
+      catch(e){ window.scrollTo(0,0); }
+    });
+    pager.appendChild(b);
+  });
 }
 
 function renderQuestion(){
